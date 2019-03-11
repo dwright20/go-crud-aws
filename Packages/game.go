@@ -34,7 +34,7 @@ type Hots struct {
 	Deaths		string	`json:"deaths"`
 	Assists		string	`json:"assists"`
 	Time		string	`json:"time"`
-	Map			string	`json:"map"`
+	Map		string	`json:"map"`
 }
 
 func NewApex (username, date, game, result, legend, kills, placement, damage, time, teammates string) Apex {
