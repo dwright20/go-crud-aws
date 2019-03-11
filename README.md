@@ -32,6 +32,7 @@ System is hosted within an AWS default VPC with 3 EC2 instances, an RDS instance
 - [Template](https://golang.org/pkg/html/template/): Used to serve all Web server content
 ## TODO
 - [ ] Encrypt Passwords for data store
+- [ ] Error handling & edge cases
 - [ ] Implement a cookie for smoother results viewing
 - [ ] Setup RR scheme & auto scaling policy for CRUD servers
 - [ ] Incorporate more games
