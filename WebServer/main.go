@@ -219,7 +219,7 @@ func renderNode(n *html.Node) string {
 func Results(w http.ResponseWriter, r *http.Request)  {
 	r.ParseForm()
 
-	resp, _ := http.Get("http://ec2-3-92-133-225.compute-1.amazonaws.com:8000/view/" + r.FormValue( "game") + "/" + r.FormValue("user_name"))
+	resp, _ := http.Get("App Server :8000/view/" + r.FormValue( "game") + "/" + r.FormValue("user_name"))
 
 	body, _ := ioutil.ReadAll(resp.Body)
 
