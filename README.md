@@ -18,17 +18,26 @@ System is hosted within an AWS default VPC with 3 EC2 instances, an RDS instance
 - Only handles POST & GET requests
 - Runs on Go
 ### Credentials DB
-- Data store for sign-in credentials
+- Database for sign-in credentials
 - Runs on PostgreSQL
 ### Results DB
-- Data store for game results
+- Database for game results
 - Individual table for each game 
-## Packages Used
-### AWS
-### HTTP
+## Key Packages Used
+- [AWS](https://github.com/aws/aws-sdk-go) - [Session](github.com/aws/aws-sdk-go/aws/session), [DynamoDB](github.com/aws/aws-sdk-go/service/dynamodb), [DynamoDB Attribute](github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute): Used for all AWS interactions/API calls
+- [Creds](): Pacakge created to store DB credentials and generate them needed
+- [Game](): Package created to contain structs for different games and a generator for each
+- [JSON](https://golang.org/pkg/encoding/json/) & [Bytes](https://golang.org/pkg/bytes/): For passing data between servers 
+- [Mux Server](github.com/gorilla/mux): Powered all HTTP interactions on servers
+- [Template](https://golang.org/pkg/html/template/): Used to serve all Web server content
 ## TODO
 - [ ] Encrypt Passwords for data store
 - [ ] Implement a cookie for smoother results viewing
 - [ ] Setup RR scheme & auto scaling policy for CRUD servers
 - [ ] Incorporate more games
-
+## Acknowledgements
+Some resources that I found very helpful:
+    - [Requests/JSON/Forms](http://polyglot.ninja/golang-making-http-requests/)
+    - [Go on AWS](https://hackernoon.com/deploying-a-go-application-on-aws-ec2-76390c09c2c5)
+    - [HTML Parsing](https://stackoverflow.com/questions/30109061/golang-parse-html-extract-all-content-with-body-body-tags)
+    - [Generate HTML content](https://stackoverflow.com/questions/19991124/go-template-html-iteration-to-generate-table-from-struct)
