@@ -37,7 +37,7 @@ System is hosted within an AWS default VPC with 3 EC2 instances, an RDS instance
 - [ ] Incorporate more games
 ## Acknowledgements
 Some resources that I found very helpful:
-- - [Requests/JSON/Forms](http://polyglot.ninja/golang-making-http-requests/)
-- - [Go on AWS](https://hackernoon.com/deploying-a-go-application-on-aws-ec2-76390c09c2c5)
-- - [HTML Parsing](https://stackoverflow.com/questions/30109061/golang-parse-html-extract-all-content-with-body-body-tags)
--  - [Generate HTML content](https://stackoverflow.com/questions/19991124/go-template-html-iteration-to-generate-table-from-struct)
+* -  [Requests/JSON/Forms](http://polyglot.ninja/golang-making-http-requests/)
+* - [Go on AWS](https://hackernoon.com/deploying-a-go-application-on-aws-ec2-76390c09c2c5)
+* - [HTML Parsing](https://stackoverflow.com/questions/30109061/golang-parse-html-extract-all-content-with-body-body-tags)
+* - [Generate HTML content](https://stackoverflow.com/questions/19991124/go-template-html-iteration-to-generate-table-from-struct)
