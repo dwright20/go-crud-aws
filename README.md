@@ -28,7 +28,7 @@ System is hosted within an AWS default VPC with 3 EC2 instances, an RDS instance
 - [Creds](https://github.com/dwright20/go-crud-aws/blob/master/Packages/hiddenCreds.go): Pacakge created to store DB credentials and generate them when needed
 - [Game](https://github.com/dwright20/go-crud-aws/blob/master/Packages/game.go): Package created to contain structs for different games and a generator for each
 - [JSON](https://golang.org/pkg/encoding/json/) & [Bytes](https://golang.org/pkg/bytes/): For passing data between servers 
-- [Mux Server](github.com/gorilla/mux): Powered all HTTP interactions on servers
+- [Mux Router](github.com/gorilla/mux): Powered all HTTP interactions on servers
 - [Template](https://golang.org/pkg/html/template/): Used to serve all Web server content
 ## TODO
 - [ ] Encrypt Passwords for data store
