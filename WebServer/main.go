@@ -15,124 +15,49 @@ import (
 	"strings"
 )
 
-func HomePage(w http.ResponseWriter, r *http.Request) {
-	t, err := template.ParseFiles("index.html") 
-	if err != nil { 
-		log.Print("template parsing error: ", err) 
+//serves all static html to the web server by taking
+//in the request, reading the request url, and serving
+//the correct html based on the switch cases
+func ServeStaticHTML(w http.ResponseWriter, r *http.Request) {
+	var fileToServe string
+	path := r.URL.String()
+	switch path{
+	case "/create":
+		fileToServe = "create.html"
+	case "/createError":
+		fileToServe = "createError.html"
+	case "/signinError":
+		fileToServe = "signinError.html"
+	case "/gameSelect":
+		fileToServe = "gameSelect.html"
+	case "/apexForm":
+		fileToServe = "apexForm.html"
+	case "/fortniteForm":
+		fileToServe = "forniteForm.html"
+	case "/hotsForm":
+		fileToServe = "hotsForm.html"
+	case "/apexSelect":
+		fileToServe = "apexSelect.html"
+	case "/fortniteSelect":
+		fileToServe = "fortniteSelect.html"
+	case "/hotsSelect":
+		fileToServe = "hotsSelect.html"
+	case "/viewApex":
+		fileToServe = "viewApex.html"
+	case "/viewFortnite":
+		fileToServe = "viewFortnite.html"
+	case "/viewHots":
+		fileToServe = "viewHots.html"
+	default:
+		fileToServe = "index.html"
 	}
-	err = t.Execute(w, nil) 
-	if err != nil { 
-		log.Print("template executing error: ", err) 
+	t, err := template.ParseFiles(fileToServe)
+	if err != nil {
+		log.Print("template parsing error: ", err)
 	}
-}
-
-func Create(w http.ResponseWriter, r *http.Request) {
-	t, err := template.ParseFiles("create.html") 
-	if err != nil { 
-		log.Print("template parsing error: ", err) 
-	}
-	err = t.Execute(w, nil) 
-	if err != nil { 
-		log.Print("template executing error: ", err) 
-	}
-}
-
-func CreateError(w http.ResponseWriter, r *http.Request) {
-	t, err := template.ParseFiles("createError.html") 
-	if err != nil { 
-		log.Print("template parsing error: ", err) 
-	}
-	err = t.Execute(w, nil) 
-	if err != nil { 
-		log.Print("template executing error: ", err) 
-	}
-}
-
-func SigninError(w http.ResponseWriter, r *http.Request) {
-	t, err := template.ParseFiles("signinError.html") 
-	if err != nil { 
-		log.Print("template parsing error: ", err) 
-	}
-	err = t.Execute(w, nil) 
-	if err != nil { 
-		log.Print("template executing error: ", err) 
-	}
-}
-
-func GameSelect(w http.ResponseWriter, r *http.Request) {
-	t, err := template.ParseFiles("gameSelect.html") 
-	if err != nil { 
-		log.Print("template parsing error: ", err) 
-	}
-	err = t.Execute(w, nil) 
-	if err != nil { 
-		log.Print("template executing error: ", err) 
-	}
-}
-
-func ApexForm(w http.ResponseWriter, r *http.Request) {
-	t, err := template.ParseFiles("apexForm.html") 
-	if err != nil { 
-		log.Print("template parsing error: ", err) 
-	}
-	err = t.Execute(w, nil) 
-	if err != nil { 
-		log.Print("template executing error: ", err) 
-	}
-}
-
-func FortniteForm(w http.ResponseWriter, r *http.Request) {
-	t, err := template.ParseFiles("fortniteForm.html") 
-	if err != nil { 
-		log.Print("template parsing error: ", err) 
-	}
-	err = t.Execute(w, nil) 
-	if err != nil { 
-		log.Print("template executing error: ", err) 
-	}
-}
-
-func HotsForm(w http.ResponseWriter, r *http.Request) {
-	t, err := template.ParseFiles("hotsForm.html") 
-	if err != nil { 
-		log.Print("template parsing error: ", err) 
-	}
-	err = t.Execute(w, nil) 
-	if err != nil { 
-		log.Print("template executing error: ", err) 
-	}
-}
-
-func ApexSelect(w http.ResponseWriter, r *http.Request) {
-	t, err := template.ParseFiles("apexSelect.html") 
-	if err != nil { 
-		log.Print("template parsing error: ", err) 
-	}
-	err = t.Execute(w, nil) 
-	if err != nil { 
-		log.Print("template executing error: ", err) 
-	}
-}
-
-func FortniteSelect(w http.ResponseWriter, r *http.Request) {
-	t, err := template.ParseFiles("fortniteSelect.html") 
-	if err != nil { 
-		log.Print("template parsing error: ", err) 
-	}
-	err = t.Execute(w, nil) 
-	if err != nil { 
-		log.Print("template executing error: ", err) 
-	}
-}
-
-func HotsSelect(w http.ResponseWriter, r *http.Request) {
-	t, err := template.ParseFiles("hotsSelect.html") 
-	if err != nil { 
-		log.Print("template parsing error: ", err) 
-	}
-	err = t.Execute(w, nil) 
-	if err != nil { 
-		log.Print("template executing error: ", err) 
+	err = t.Execute(w, nil)
+	if err != nil {
+		log.Print("template executing error: ", err)
 	}
 }
 
@@ -150,39 +75,6 @@ func FortLogo (w http.ResponseWriter, r *http.Request) {
 
 func HotsLogo (w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "hots_logo.jpg")
-}
-
-func ViewApex (w http.ResponseWriter, r *http.Request) {
-	t, err := template.ParseFiles("viewApex.html") 
-	if err != nil { 
-		log.Print("template parsing error: ", err) 
-	}
-	err = t.Execute(w, nil) 
-	if err != nil { 
-		log.Print("template executing error: ", err) 
-	}
-}
-
-func ViewFortnite (w http.ResponseWriter, r *http.Request) {
-	t, err := template.ParseFiles("viewFortnite.html") 
-	if err != nil { 
-		log.Print("template parsing error: ", err) 
-	}
-	err = t.Execute(w, nil) 
-	if err != nil { 
-		log.Print("template executing error: ", err) 
-	}
-}
-
-func ViewHots (w http.ResponseWriter, r *http.Request) {
-	t, err := template.ParseFiles("viewHots.html") 
-	if err != nil { 
-		log.Print("template parsing error: ", err) 
-	}
-	err = t.Execute(w, nil) 
-	if err != nil { 
-		log.Print("template executing error: ", err) 
-	}
 }
 
 //recursively parses html and returns all content that
@@ -219,7 +111,7 @@ func renderNode(n *html.Node) string {
 func Results(w http.ResponseWriter, r *http.Request)  {
 	r.ParseForm()
 
-	resp, _ := http.Get("App Server :8000/view/" + r.FormValue( "game") + "/" + r.FormValue("user_name"))
+	resp, _ := http.Get("http://ec2-3-92-133-225.compute-1.amazonaws.com:8000/view/" + r.FormValue( "game") + "/" + r.FormValue("user_name"))
 
 	body, _ := ioutil.ReadAll(resp.Body)
 
@@ -239,7 +131,7 @@ func Results(w http.ResponseWriter, r *http.Request)  {
 		Table: template.HTML(bod),
 	}
 
-	t, err := template.ParseFiles("table.html") 
+	t, err := template.ParseFiles("table.html")
 	if err != nil {
 		log.Print("template parsing error: ", err)
 	}
@@ -255,20 +147,20 @@ func main() {
 	r := mux.NewRouter() //create router
 
 	//html pages
-	r.HandleFunc("/", HomePage)
-	r.HandleFunc("/create", Create)
-	r.HandleFunc("/createError", CreateError)
-	r.HandleFunc("/signinError", SigninError)
-	r.HandleFunc("/gameSelect", GameSelect)
-	r.HandleFunc("/apexForm", ApexForm)
-	r.HandleFunc("/fortniteForm", FortniteForm)
-	r.HandleFunc("/hotsForm", HotsForm)
-	r.HandleFunc("/apexSelect", ApexSelect)
-	r.HandleFunc("/fortniteSelect", FortniteSelect)
-	r.HandleFunc("/hotsSelect", HotsSelect)
-	r.HandleFunc("/viewApex", ViewApex)
-	r.HandleFunc("/viewFortnite", ViewFortnite)
-	r.HandleFunc("/viewHots", ViewHots)
+	r.HandleFunc("/", ServeStaticHTML)
+	r.HandleFunc("/create", ServeStaticHTML)
+	r.HandleFunc("/createError", ServeStaticHTML)
+	r.HandleFunc("/signinError", ServeStaticHTML)
+	r.HandleFunc("/gameSelect", ServeStaticHTML)
+	r.HandleFunc("/apexForm", ServeStaticHTML)
+	r.HandleFunc("/fortniteForm", ServeStaticHTML)
+	r.HandleFunc("/hotsForm", ServeStaticHTML)
+	r.HandleFunc("/apexSelect", ServeStaticHTML)
+	r.HandleFunc("/fortniteSelect", ServeStaticHTML)
+	r.HandleFunc("/hotsSelect", ServeStaticHTML)
+	r.HandleFunc("/viewApex", ServeStaticHTML)
+	r.HandleFunc("/viewFortnite", ServeStaticHTML)
+	r.HandleFunc("/viewHots", ServeStaticHTML)
 	r.HandleFunc("/results", Results)
 
 	//style sheet
