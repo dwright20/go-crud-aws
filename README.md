@@ -31,7 +31,9 @@ System is hosted within an AWS default VPC with 3 EC2 instances, an RDS instance
 - [Mux Router](https://github.com/gorilla/mux) & [HTTP](https://golang.org/pkg/net/http/): Powered all HTTP interactions & routing on servers
 - [Template](https://golang.org/pkg/html/template/): Used to serve all Web server content
 ## TODO
-- [ ] Encrypt Passwords for data store
+- [ x ] Encrypt Passwords for data store
+* Used [bcrypt](https://godoc.org/golang.org/x/crypto/bcrypt#GenerateFromPassword) to salt and hash passwords for storage in DB
+* Is not encrypting the password, but solves the issue of storing passwords in plain text
 - [ ] Implement a cookie for smoother results viewing
 - [ ] Error handling & edge cases
 - [ ] Setup RR scheme & auto scaling policy for CRUD servers
