@@ -25,7 +25,7 @@ System is hosted within an AWS default VPC with 3 EC2 instances, an RDS instance
 - Individual table for each game 
 ## Key Packages Used
 - [AWS](https://github.com/aws/aws-sdk-go) - [Session](https://github.com/aws/aws-sdk-go/aws/session), [DynamoDB](https://github.com/aws/aws-sdk-go/service/dynamodb), [DynamoDB Attribute](https://github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute): Used for all AWS interactions/API calls
-- [Creds](https://github.com/dwright20/go-crud-aws/blob/master/Packages/hiddenCreds.go): Pacakge created to store DB credentials and generate them when needed
+- [Creds](https://github.com/dwright20/go-crud-aws/blob/master/Packages/hiddenCreds.go): Package created to store DB credentials and generate them when needed
 - [Game](https://github.com/dwright20/go-crud-aws/blob/master/Packages/game.go): Package created to contain structs for different games and a generator for each
 - [JSON](https://golang.org/pkg/encoding/json/) & [Bytes](https://golang.org/pkg/bytes/): For passing data between servers 
 - [Mux Router](https://github.com/gorilla/mux) & [HTTP](https://golang.org/pkg/net/http/): Powered all HTTP interactions & routing on servers
