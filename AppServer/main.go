@@ -2,14 +2,15 @@
 package main
 
 import (
-	"game"
-	"hiddenCreds"
+	"awesomeProject/first_project/game"
+	"awesomeProject/first_project/hiddenCreds"
 	"bytes"
 	"database/sql"
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
+	"golang.org/x/crypto/bcrypt"
 	"log"
 	"net/http"
 	"time"
@@ -32,9 +33,9 @@ func signIn(w http.ResponseWriter, r *http.Request) {
 	res := checkPassword(username, password)
 	if res == true{
 		fmt.Println(username + " signed in") //log user sign-in
-		http.Redirect(w, r, "Web Server /gameSelect", http.StatusSeeOther)
+		http.Redirect(w, r, "http://ec2-3-95-30-158.compute-1.amazonaws.com/gameSelect", http.StatusSeeOther)
 	}else {
-		http.Redirect(w, r, "Web Server /signError", http.StatusSeeOther)
+		http.Redirect(w, r, "http://ec2-3-95-30-158.compute-1.amazonaws.com/signinError", http.StatusSeeOther)
 	}
 }
 
@@ -49,9 +50,9 @@ func createAccount(w http.ResponseWriter, r *http.Request) {
 	res := createUser(username, password)
 	if res == true{
 		fmt.Println(username + " account created") //log account creation
-		http.Redirect(w, r, "Web Server /gameSelect", http.StatusSeeOther)
+		http.Redirect(w, r, "http://ec2-3-95-30-158.compute-1.amazonaws.com/gameSelect", http.StatusSeeOther)
 	}else {
-		http.Redirect(w, r, "Web Server /createError", http.StatusSeeOther)
+		http.Redirect(w, r, "http://ec2-3-95-30-158.compute-1.amazonaws.com/createError", http.StatusSeeOther)
 	}
 }
 
@@ -66,7 +67,7 @@ func checkPassword(username, password string) bool {
 
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
-		//panic(err)
+		log.Println(err)
 		return false
 	}
 
@@ -77,14 +78,15 @@ func checkPassword(username, password string) bool {
 	case sql.ErrNoRows:
 		fmt.Println("No rows were returned!")
 	case nil:
-		if dbPass == password{
+		hashAndPass := bcrypt.CompareHashAndPassword([]byte(dbPass), []byte(password))
+		if hashAndPass == nil{
 			db.Close()
 			return true
 		} else {
 			return false
 		}
 	default:
-		//panic(err)
+		log.Println(err)
 	}
 
 	return false
@@ -100,16 +102,18 @@ func createUser(user_username, user_password string) bool {
 
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
-		//panic(err)
+		log.Println(err)
 		return false
 	}
+
+	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(user_password), 8)
 
 	sqlStatement := `
 INSERT INTO postgres.public.users (user_name, user_pass)
 VALUES ($1, $2)`
-	_, err = db.Exec(sqlStatement, user_username, user_password)
+	_, err = db.Exec(sqlStatement, user_username, hashedPassword)
 	if err != nil {
-		//panic(err)
+		log.Println(err)
 		return false
 	}
 
@@ -130,10 +134,10 @@ func submit(w http.ResponseWriter, r *http.Request){
 		b := new(bytes.Buffer)
 		json.NewEncoder(b).Encode(game)
 		//Post encoded game to CRUD server
-		_, _ = http.Post("CRUD Server :8000/create/apex", "application/json", b)
+		_, _ = http.Post("http://ec2-174-129-90-38.compute-1.amazonaws.com:8000/create/apex", "application/json", b)
 
 		//redirect to game's select screen
-		http.Redirect(w, r, "Web Server /apexSelect", http.StatusSeeOther)
+		http.Redirect(w, r, "http://ec2-3-95-30-158.compute-1.amazonaws.com/apexSelect", http.StatusSeeOther)
 	} else if r.FormValue("game") == "fort" {
 		game := game.NewFort(r.FormValue("user_name"), time.Now().Format(time.RFC822),r.FormValue("game"),r.FormValue("result"),r.FormValue("kills"),r.FormValue("placement"),r.FormValue("mode"), r.FormValue("teammates"))
 
@@ -142,10 +146,10 @@ func submit(w http.ResponseWriter, r *http.Request){
 		b := new(bytes.Buffer)
 		json.NewEncoder(b).Encode(game)
 		//Post encoded game to CRUD server
-		_, _ = http.Post("CRUD Server :8000/create/fort", "application/json", b)
+		_, _ = http.Post("http://ec2-174-129-90-38.compute-1.amazonaws.com:8000/create/fort", "application/json", b)
 
 		//redirect to game's select screen
-		http.Redirect(w, r, "Web Server /fortniteSelect", http.StatusSeeOther)
+		http.Redirect(w, r, "http://ec2-3-95-30-158.compute-1.amazonaws.com/fortniteSelect", http.StatusSeeOther)
 	} else {
 		game := game.NewHots(r.FormValue("user_name"), time.Now().Format(time.RFC822), r.FormValue("game"),r.FormValue("result"),r.FormValue("hero"),r.FormValue("kills"),r.FormValue("deaths"),r.FormValue("assists"),r.FormValue("time"),r.FormValue("map"))
 
@@ -154,10 +158,10 @@ func submit(w http.ResponseWriter, r *http.Request){
 		b := new(bytes.Buffer)
 		json.NewEncoder(b).Encode(game)
 		//Post encoded game to CRUD server
-		_, _ = http.Post("CRUD Server :8000/create/hots", "application/json", b)
+		_, _ = http.Post("http://ec2-174-129-90-38.compute-1.amazonaws.com:8000/create/hots", "application/json", b)
 
 		//redirect to game's select screen
-		http.Redirect(w, r, "Web Server /hotsSelect", http.StatusSeeOther)
+		http.Redirect(w, r, "http://ec2-3-95-30-158.compute-1.amazonaws.com/hotsSelect", http.StatusSeeOther)
 	}
 }
 
@@ -166,7 +170,7 @@ func submit(w http.ResponseWriter, r *http.Request){
 //back to the initial requesting server
 func view(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	req := "CRUD Server :8000/read/" + params["game"] + "/" + params["user"]
+	req := "http://ec2-174-129-90-38.compute-1.amazonaws.com:8000/read/" + params["game"] + "/" + params["user"]
 	fmt.Println("Reading " + params["user"] + "-" + params["game"])
 	resp, _ := http.Get(req)
 	resp.Write(w)
