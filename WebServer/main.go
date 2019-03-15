@@ -15,6 +15,8 @@ import (
 	"strings"
 )
 
+var appServer =  ""
+
 //serves all static html to the web server by taking
 //in the request, reading the request url, and serving
 //the correct html based on the switch cases
@@ -111,7 +113,7 @@ func renderNode(n *html.Node) string {
 func Results(w http.ResponseWriter, r *http.Request)  {
 	r.ParseForm()
 
-	resp, _ := http.Get("http://ec2-3-92-133-225.compute-1.amazonaws.com:8000/view/" + r.FormValue( "game") + "/" + r.FormValue("user_name"))
+	resp, _ := http.Get(appServer + "/view/" + r.FormValue( "game") + "/" + r.FormValue("user_name"))
 
 	body, _ := ioutil.ReadAll(resp.Body)
 
