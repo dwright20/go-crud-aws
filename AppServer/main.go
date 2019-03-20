@@ -36,9 +36,9 @@ func signIn(w http.ResponseWriter, r *http.Request) {
 	res := checkPassword(username, password)
 	if res == true{
 		fmt.Println(username + " signed in") //log user sign-in
-		http.Redirect(w, r, webServer + "/gameSelect", http.StatusSeeOther)
+		w.WriteHeader(200)
 	}else {
-		http.Redirect(w, r, webServer + "/signinError", http.StatusSeeOther)
+		w.WriteHeader(400)
 	}
 }
 
@@ -53,9 +53,9 @@ func createAccount(w http.ResponseWriter, r *http.Request) {
 	res := createUser(username, password)
 	if res == true{
 		fmt.Println(username + " account created") //log account creation
-		http.Redirect(w, r, webServer + "/gameSelect", http.StatusSeeOther)
+		w.WriteHeader(200)
 	}else {
-		http.Redirect(w, r, webServer + "/createError", http.StatusSeeOther)
+		w.WriteHeader(400)
 	}
 }
 

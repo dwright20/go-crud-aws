@@ -175,6 +175,62 @@ func Submit (w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+//POSTs the request to the appServer, reads the response header
+//to determine if sign-in was good or bad, and serves appropriate
+//web page
+func Signin (w http.ResponseWriter, r *http.Request) {
+	var fileToServe string
+
+	resp, err := http.Post(appServer + "/signin", "application/x-www-form-urlencoded", r.Body)
+
+	if err != nil{
+		log.Println(err)
+	}
+	if resp.StatusCode == 200 && err == nil{
+		fileToServe = "gameSelect.html"
+	}else{
+		fileToServe = "signinError.html"
+	}
+
+	//redirect to game's select screen
+	t, err := template.ParseFiles(fileToServe)
+	if err != nil {
+		log.Print("template parsing error: ", err)
+	}
+	err = t.Execute(w, nil)
+	if err != nil {
+		log.Print("template executing error: ", err)
+	}
+}
+
+//POSTs the request to the appServer, reads the response header
+//to determine if account creation was good or bad, and serves
+//appropriate web page
+func CreateAccount (w http.ResponseWriter, r *http.Request) {
+	var fileToServe string
+
+	resp, err := http.Post(appServer + "/createAccount", "application/x-www-form-urlencoded", r.Body)
+
+	if err != nil{
+		log.Println(err)
+	}
+	if resp.StatusCode == 200 && err == nil{
+		fileToServe = "gameSelect.html"
+	}else{
+		fileToServe = "createError.html"
+	}
+
+	//redirect to game's select screen
+	t, err := template.ParseFiles(fileToServe)
+	if err != nil {
+		log.Print("template parsing error: ", err)
+	}
+	err = t.Execute(w, nil)
+	if err != nil {
+		log.Print("template executing error: ", err)
+	}
+}
+
 //create mux router to listen on port 80, handle
 //all user interaction, and generate web content
 func main() {
@@ -206,6 +262,8 @@ func main() {
 	r.HandleFunc("/fortnite_logo.jpg", FortLogo)
 
 	//form handling
+	r.HandleFunc("/signin", Signin)
+	r.HandleFunc("/createAccount", CreateAccount)
 	r.HandleFunc("/submit", Submit)
 
 	log.Fatal(http.ListenAndServe(":80", r))
