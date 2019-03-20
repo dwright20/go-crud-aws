@@ -108,7 +108,7 @@ func renderNode(n *html.Node) string {
 }
 
 //parses request form, gets the requested user's game results,
-//parses html table generated from get call, and executes
+//parses html table generated from GET call, and executes
 //table into template for response
 func Results(w http.ResponseWriter, r *http.Request)  {
 	r.ParseForm()
@@ -143,6 +143,38 @@ func Results(w http.ResponseWriter, r *http.Request)  {
 	}
 }
 
+//POSTs the request to the appServer, parses the request to,
+//find game type, and responds with the game types select
+//page
+func Submit (w http.ResponseWriter, r *http.Request) {
+	var fileToServe string
+
+	_, _ = http.Post(appServer + "/submit", "application/x-www-form-urlencoded", r.Body)
+
+	r.ParseForm()
+	game := r.FormValue("game")
+	switch game {
+	case "apex":
+		fileToServe = "apexSelect.html"
+	case "fort":
+		fileToServe = "fortniteSelect.html"
+	case "hots":
+		fileToServe = "hotsSelect.html"
+	default:
+		fileToServe = "gameSelect.html"
+	}
+
+	//redirect to game's select screen
+	t, err := template.ParseFiles(fileToServe)
+	if err != nil {
+		log.Print("template parsing error: ", err)
+	}
+	err = t.Execute(w, nil)
+	if err != nil {
+		log.Print("template executing error: ", err)
+	}
+}
+
 //create mux router to listen on port 80, handle
 //all user interaction, and generate web content
 func main() {
@@ -172,6 +204,9 @@ func main() {
 	r.HandleFunc("/hots_logo.jpg", HotsLogo)
 	r.HandleFunc("/apex_legends_logo.jpg", ApexLogo)
 	r.HandleFunc("/fortnite_logo.jpg", FortLogo)
+
+	//form handling
+	r.HandleFunc("/submit", Submit)
 
 	log.Fatal(http.ListenAndServe(":80", r))
 }

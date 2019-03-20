@@ -137,10 +137,11 @@ func submit(w http.ResponseWriter, r *http.Request){
 		b := new(bytes.Buffer)
 		json.NewEncoder(b).Encode(game)
 		//Post encoded game to CRUD server
-		_, _ = http.Post(crudServer + "/create/apex", "application/json", b)
+		_, err := http.Post(crudServer + "/create/apex", "application/json", b)
 
-		//redirect to game's select screen
-		http.Redirect(w, r, webServer + "/apexSelect", http.StatusSeeOther)
+		if err !=nil{
+			log.Print("Posting error: ", err)
+		}
 	} else if r.FormValue("game") == "fort" {
 		game := game.NewFort(r.FormValue("user_name"), time.Now().Format(time.RFC822),r.FormValue("game"),r.FormValue("result"),r.FormValue("kills"),r.FormValue("placement"),r.FormValue("mode"), r.FormValue("teammates"))
 
@@ -149,10 +150,11 @@ func submit(w http.ResponseWriter, r *http.Request){
 		b := new(bytes.Buffer)
 		json.NewEncoder(b).Encode(game)
 		//Post encoded game to CRUD server
-		_, _ = http.Post(crudServer + "/create/fort", "application/json", b)
+		_, err := http.Post(crudServer + "/create/fort", "application/json", b)
 
-		//redirect to game's select screen
-		http.Redirect(w, r, webServer + "/fortniteSelect", http.StatusSeeOther)
+		if err !=nil{
+			log.Print("Posting error: ", err)
+		}
 	} else {
 		game := game.NewHots(r.FormValue("user_name"), time.Now().Format(time.RFC822), r.FormValue("game"),r.FormValue("result"),r.FormValue("hero"),r.FormValue("kills"),r.FormValue("deaths"),r.FormValue("assists"),r.FormValue("time"),r.FormValue("map"))
 
@@ -161,10 +163,11 @@ func submit(w http.ResponseWriter, r *http.Request){
 		b := new(bytes.Buffer)
 		json.NewEncoder(b).Encode(game)
 		//Post encoded game to CRUD server
-		_, _ = http.Post(crudServer + "/create/hots", "application/json", b)
+		_, err := http.Post(crudServer + "/create/hots", "application/json", b)
 
-		//redirect to game's select screen
-		http.Redirect(w, r, webServer + "/hotsSelect", http.StatusSeeOther)
+		if err !=nil{
+			log.Print("Posting error: ", err)
+		}
 	}
 }
 
