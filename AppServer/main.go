@@ -2,8 +2,8 @@
 package main
 
 import (
-	"awesomeProject/first_project/game"
-	"awesomeProject/first_project/hiddenCreds"
+	"game"
+	"hiddenCreds"
 	"bytes"
 	"database/sql"
 	"encoding/json"
@@ -16,8 +16,7 @@ import (
 	"time"
 )
 
-var webServer =  ""
-var crudServer = ""
+const CrudServer = ""
 
 //get DB credentials
 func getCreds() hiddenCreds.Creds{
@@ -137,7 +136,7 @@ func submit(w http.ResponseWriter, r *http.Request){
 		b := new(bytes.Buffer)
 		json.NewEncoder(b).Encode(game)
 		//Post encoded game to CRUD server
-		_, err := http.Post(crudServer + "/create/apex", "application/json", b)
+		_, err := http.Post(CrudServer + "/create/apex", "application/json", b)
 
 		if err !=nil{
 			log.Print("Posting error: ", err)
@@ -150,7 +149,7 @@ func submit(w http.ResponseWriter, r *http.Request){
 		b := new(bytes.Buffer)
 		json.NewEncoder(b).Encode(game)
 		//Post encoded game to CRUD server
-		_, err := http.Post(crudServer + "/create/fort", "application/json", b)
+		_, err := http.Post(CrudServer + "/create/fort", "application/json", b)
 
 		if err !=nil{
 			log.Print("Posting error: ", err)
@@ -163,7 +162,7 @@ func submit(w http.ResponseWriter, r *http.Request){
 		b := new(bytes.Buffer)
 		json.NewEncoder(b).Encode(game)
 		//Post encoded game to CRUD server
-		_, err := http.Post(crudServer + "/create/hots", "application/json", b)
+		_, err := http.Post(CrudServer + "/create/hots", "application/json", b)
 
 		if err !=nil{
 			log.Print("Posting error: ", err)
@@ -176,7 +175,7 @@ func submit(w http.ResponseWriter, r *http.Request){
 //back to the initial requesting server
 func view(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	req := crudServer + "/read/" + params["game"] + "/" + params["user"]
+	req := CrudServer + "/read/" + params["game"] + "/" + params["user"]
 	fmt.Println("Reading " + params["user"] + "-" + params["game"])
 	resp, _ := http.Get(req)
 	resp.Write(w)

@@ -15,7 +15,7 @@ import (
 	"strings"
 )
 
-var appServer =  ""
+const AppServer =  ""
 
 //serves all static html to the web server by taking
 //in the request, reading the request url, and serving
@@ -113,7 +113,7 @@ func renderNode(n *html.Node) string {
 func Results(w http.ResponseWriter, r *http.Request)  {
 	r.ParseForm()
 
-	resp, _ := http.Get(appServer + "/view/" + r.FormValue( "game") + "/" + r.FormValue("user_name"))
+	resp, _ := http.Get(AppServer + "/view/" + r.FormValue( "game") + "/" + r.FormValue("user_name"))
 
 	body, _ := ioutil.ReadAll(resp.Body)
 
@@ -143,13 +143,13 @@ func Results(w http.ResponseWriter, r *http.Request)  {
 	}
 }
 
-//POSTs the request to the appServer, parses the request to,
+//POSTs the request to the AppServer, parses the request to,
 //find game type, and responds with the game types select
 //page
 func Submit (w http.ResponseWriter, r *http.Request) {
 	var fileToServe string
 
-	_, _ = http.Post(appServer + "/submit", "application/x-www-form-urlencoded", r.Body)
+	_, _ = http.Post(AppServer + "/submit", "application/x-www-form-urlencoded", r.Body)
 
 	r.ParseForm()
 	game := r.FormValue("game")
@@ -175,13 +175,13 @@ func Submit (w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//POSTs the request to the appServer, reads the response header
+//POSTs the request to the AppServer, reads the response header
 //to determine if sign-in was good or bad, and serves appropriate
 //web page
 func Signin (w http.ResponseWriter, r *http.Request) {
 	var fileToServe string
 
-	resp, err := http.Post(appServer + "/signin", "application/x-www-form-urlencoded", r.Body)
+	resp, err := http.Post(AppServer + "/signin", "application/x-www-form-urlencoded", r.Body)
 
 	if err != nil{
 		log.Println(err)
@@ -203,13 +203,13 @@ func Signin (w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//POSTs the request to the appServer, reads the response header
+//POSTs the request to the AppServer, reads the response header
 //to determine if account creation was good or bad, and serves
 //appropriate web page
 func CreateAccount (w http.ResponseWriter, r *http.Request) {
 	var fileToServe string
 
-	resp, err := http.Post(appServer + "/createAccount", "application/x-www-form-urlencoded", r.Body)
+	resp, err := http.Post(AppServer + "/createAccount", "application/x-www-form-urlencoded", r.Body)
 
 	if err != nil{
 		log.Println(err)
