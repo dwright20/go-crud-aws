@@ -16,10 +16,8 @@ class WebTesting (unittest.TestCase):
     # method to sign into web server for testing features past sign in
     def Signin(self):
         driver = self.driver
-        username = driver.find_element_by_name("user_name")  # find username field
-        password = driver.find_element_by_name("user_pass")  # find password field
-        username.send_keys(USER)  # send username
-        password.send_keys(PASS)  # send password
+        driver.find_element_by_name("user_name").send_keys(USER)  # send username
+        driver.find_element_by_name("user_pass").send_keys(PASS)  # send password
         driver.find_element_by_css_selector('button[type="submit"]').click()
         WebDriverWait(driver, 5).until(EC.title_contains('Select'))  # let new webpage load
 
@@ -34,10 +32,8 @@ class WebTesting (unittest.TestCase):
     # test sign in functionality with testing credentials
     def test_signin(self):
         driver = self.driver
-        username = driver.find_element_by_name("user_name")
-        password = driver.find_element_by_name("user_pass")
-        username.send_keys(USER)
-        password.send_keys(PASS)
+        driver.find_element_by_name("user_name").send_keys(USER)
+        driver.find_element_by_name("user_pass").send_keys(PASS)
         driver.find_element_by_css_selector('button[type="submit"]').click()
         res = WebDriverWait(driver, 5).until(EC.title_contains('Select'))
         worked = res
@@ -50,22 +46,52 @@ class WebTesting (unittest.TestCase):
         driver.find_element_by_css_selector('a[href="apexSelect"]').click()  # select Apex game option
         driver.find_element_by_partial_link_text('Submit').click()  # select submission page
         # below finds fields of submission form and sends mock data
-        username = driver.find_element_by_name("user_name")
-        result = driver.find_element_by_name("result")
-        legend = driver.find_element_by_name("legend")
-        kills = driver.find_element_by_name("kills")
-        placement = driver.find_element_by_name("placement")
-        damage = driver.find_element_by_name("damage")
-        time = driver.find_element_by_name("time")
-        teammates = driver.find_element_by_name("teammates")
-        username.send_keys(USER)
-        result.send_keys('loss')
-        legend.send_keys("testhero")
-        kills.send_keys('0')
-        placement.send_keys('1')
-        damage.send_keys('1000')
-        time.send_keys('15')
-        teammates.send_keys('testteam')
+        driver.find_element_by_name("user_name").send_keys(USER)
+        driver.find_element_by_name("result").send_keys('loss')
+        driver.find_element_by_name("legend").send_keys("testlegend")
+        driver.find_element_by_name("kills").send_keys('0')
+        driver.find_element_by_name("placement").send_keys('1')
+        driver.find_element_by_name("damage").send_keys('1000')
+        driver.find_element_by_name("time").send_keys('15')
+        driver.find_element_by_name("teammates").send_keys('testteam')
+        driver.find_element_by_css_selector('button[type="submit"]').click()  # submit mock data
+        res = WebDriverWait(driver, 5).until(EC.title_contains('Select'))
+        worked = res
+        self.assertTrue(worked)  # determine if you are taken to correct page after submission
+
+    # test submitting fort data with test data
+    def test_fort_submit(self):
+        self.Signin()  # sign into web server
+        driver = self.driver
+        driver.find_element_by_css_selector('a[href="fortniteSelect"]').click()  # select Apex game option
+        driver.find_element_by_partial_link_text('Submit').click()  # select submission page
+        # below finds fields of submission form and sends mock data
+        driver.find_element_by_name("user_name").send_keys(USER)
+        driver.find_element_by_name("result").send_keys('loss')
+        driver.find_element_by_name("kills").send_keys('0')
+        driver.find_element_by_name("placement").send_keys('1')
+        driver.find_element_by_name("mode").send_keys('duo')
+        driver.find_element_by_name("teammates").send_keys('random')
+        driver.find_element_by_css_selector('button[type="submit"]').click()  # submit mock data
+        res = WebDriverWait(driver, 5).until(EC.title_contains('Select'))
+        worked = res
+        self.assertTrue(worked)  # determine if you are taken to correct page after submission
+
+    # test submitting hots data with test data
+    def test_hots_submit(self):
+        self.Signin()  # sign into web server
+        driver = self.driver
+        driver.find_element_by_css_selector('a[href="hotsSelect"]').click()  # select Apex game option
+        driver.find_element_by_partial_link_text('Submit').click()  # select submission page
+        # below finds fields of submission form and sends mock data
+        driver.find_element_by_name("user_name").send_keys(USER)
+        driver.find_element_by_name("result").send_keys('loss')
+        driver.find_element_by_name("hero").send_keys("testhero")
+        driver.find_element_by_name("kills").send_keys('0')
+        driver.find_element_by_name("deaths").send_keys('1')
+        driver.find_element_by_name("assists").send_keys('10')
+        driver.find_element_by_name("time").send_keys('15')
+        driver.find_element_by_name("map").send_keys('testmap')
         driver.find_element_by_css_selector('button[type="submit"]').click()  # submit mock data
         res = WebDriverWait(driver, 5).until(EC.title_contains('Select'))
         worked = res
@@ -77,12 +103,35 @@ class WebTesting (unittest.TestCase):
         driver = self.driver
         driver.find_element_by_css_selector('a[href="apexSelect"]').click()
         driver.find_element_by_partial_link_text('View').click()  # select view page
-        username = driver.find_element_by_name("user_name")
-        username.send_keys(USER)
+        driver.find_element_by_name("user_name").send_keys(USER)
         driver.find_element_by_css_selector('button[type="submit"]').click()
-        table = driver.find_element_by_css_selector('tbody')  # find table body
-        table = table.get_attribute('innerHTML')  # read table body html
-        worked = True if USER in table else False
+        table = driver.find_element_by_css_selector('tbody').get_attribute('innerHTML')  # read table body html
+        worked = True if USER and 'apex' in table else False
+        self.assertTrue(worked)  # determine if table is presenting data for account
+
+    # test viewing fort data
+    def test_fort_view(self):
+        self.Signin()  # sign into web server
+        driver = self.driver
+        driver.find_element_by_css_selector('a[href="fortniteSelect"]').click()
+        driver.find_element_by_partial_link_text('View').click()  # select view page
+        driver.find_element_by_name("user_name").send_keys(USER)
+        driver.find_element_by_css_selector('button[type="submit"]').click()
+        table = driver.find_element_by_css_selector('tbody').get_attribute('innerHTML')  # read table body html
+        worked = True if USER and 'fort' in table else False
+        self.assertTrue(worked)  # determine if table is presenting data for account
+
+
+    # test viewing hots data
+    def test_hots_view(self):
+        self.Signin()  # sign into web server
+        driver = self.driver
+        driver.find_element_by_css_selector('a[href="hotsSelect"]').click()
+        driver.find_element_by_partial_link_text('View').click()  # select view page
+        driver.find_element_by_name("user_name").send_keys(USER)
+        driver.find_element_by_css_selector('button[type="submit"]').click()
+        table = driver.find_element_by_css_selector('tbody').get_attribute('innerHTML')  # read table body html
+        worked = True if USER and 'hots' in table else False
         self.assertTrue(worked)  # determine if table is presenting data for account
 
     # close chrome session after each test
