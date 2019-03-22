@@ -22,6 +22,7 @@ const AppServer =  ""
 //the correct html based on the switch cases
 func ServeStaticHTML(w http.ResponseWriter, r *http.Request) {
 	var fileToServe string
+
 	path := r.URL.String()
 	switch path{
 	case "/create":
@@ -147,59 +148,37 @@ func Results(w http.ResponseWriter, r *http.Request)  {
 //find game type, and responds with the game types select
 //page
 func Submit (w http.ResponseWriter, r *http.Request) {
-	var fileToServe string
-
 	_, _ = http.Post(AppServer + "/submit", "application/x-www-form-urlencoded", r.Body)
 
 	r.ParseForm()
 	game := r.FormValue("game")
+	var redirect string
 	switch game {
 	case "apex":
-		fileToServe = "apexSelect.html"
+		redirect = "/apexSelect"
 	case "fort":
-		fileToServe = "fortniteSelect.html"
+		redirect = "/fortniteSelect"
 	case "hots":
-		fileToServe = "hotsSelect.html"
+		redirect = "/hotsSelect"
 	default:
-		fileToServe = "gameSelect.html"
+		redirect = "/gameSelect"
 	}
-
-	//redirect to game's select screen
-	t, err := template.ParseFiles(fileToServe)
-	if err != nil {
-		log.Print("template parsing error: ", err)
-	}
-	err = t.Execute(w, nil)
-	if err != nil {
-		log.Print("template executing error: ", err)
-	}
+	http.Redirect(w, r, redirect, 301)
 }
 
 //POSTs the request to the AppServer, reads the response header
 //to determine if sign-in was good or bad, and serves appropriate
 //web page
 func Signin (w http.ResponseWriter, r *http.Request) {
-	var fileToServe string
-
 	resp, err := http.Post(AppServer + "/signin", "application/x-www-form-urlencoded", r.Body)
 
 	if err != nil{
 		log.Println(err)
 	}
 	if resp.StatusCode == 200 && err == nil{
-		fileToServe = "gameSelect.html"
+		http.Redirect(w, r, "/gameSelect", 301)
 	}else{
-		fileToServe = "signinError.html"
-	}
-
-	//redirect to game's select screen
-	t, err := template.ParseFiles(fileToServe)
-	if err != nil {
-		log.Print("template parsing error: ", err)
-	}
-	err = t.Execute(w, nil)
-	if err != nil {
-		log.Print("template executing error: ", err)
+		http.Redirect(w, r, "/signinError", 301)
 	}
 }
 
@@ -207,27 +186,15 @@ func Signin (w http.ResponseWriter, r *http.Request) {
 //to determine if account creation was good or bad, and serves
 //appropriate web page
 func CreateAccount (w http.ResponseWriter, r *http.Request) {
-	var fileToServe string
-
 	resp, err := http.Post(AppServer + "/createAccount", "application/x-www-form-urlencoded", r.Body)
 
 	if err != nil{
 		log.Println(err)
 	}
 	if resp.StatusCode == 200 && err == nil{
-		fileToServe = "gameSelect.html"
+		http.Redirect(w, r, "/gameSelect", 301)
 	}else{
-		fileToServe = "createError.html"
-	}
-
-	//redirect to game's select screen
-	t, err := template.ParseFiles(fileToServe)
-	if err != nil {
-		log.Print("template parsing error: ", err)
-	}
-	err = t.Execute(w, nil)
-	if err != nil {
-		log.Print("template executing error: ", err)
+		http.Redirect(w, r, "/createError", 301)
 	}
 }
 
