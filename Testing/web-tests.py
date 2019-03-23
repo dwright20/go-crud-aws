@@ -14,7 +14,7 @@ class WebTesting (unittest.TestCase):
     worked = None  # bool used for evaluating success of each test
 
     # method to sign into web server for testing features past sign in
-    def Signin(self):
+    def signIn(self):
         driver = self.driver
         driver.find_element_by_name("user_name").send_keys(USER)  # send username
         driver.find_element_by_name("user_pass").send_keys(PASS)  # send password
@@ -30,7 +30,7 @@ class WebTesting (unittest.TestCase):
         self.driver.get(WEB_SERVER)
 
     # test sign in functionality with testing credentials
-    def test_signin(self):
+    def test_01_signin(self):
         driver = self.driver
         driver.find_element_by_name("user_name").send_keys(USER)
         driver.find_element_by_name("user_pass").send_keys(PASS)
@@ -39,9 +39,25 @@ class WebTesting (unittest.TestCase):
         worked = res
         self.assertTrue(worked)  # determine if sign in is successful and taking to correct page
 
+    # test to ensure a cookie is being properly set from web server
+    def test_02_cookie(self):
+        self.signIn()
+        driver = self.driver
+        cookie_list = driver.get_cookies()
+        print(cookie_list[0])
+        worked = True if cookie_list[0].get(u'value') == u'testing' else False
+        self.assertTrue(worked)  # determine if value is properly being set to user accessing site
+
+    # test to ensure a cookie is required for all pages past sign-in/creation
+    def test_03_req_cookie(self):
+        driver = self.driver
+        driver.get(WEB_SERVER + "gameSelect")
+        worked = True if driver.current_url == WEB_SERVER else False
+        self.assertTrue(worked)  # determine if web server is properly redirecting non signed-in users to sign-in page
+
     # test submitting apex data with test data
     def test_apex_submit(self):
-        self.Signin()  # sign into web server
+        self.signIn()  # sign into web server
         driver = self.driver
         driver.find_element_by_css_selector('a[href="apexSelect"]').click()  # select Apex game option
         driver.find_element_by_partial_link_text('Submit').click()  # select submission page
@@ -61,7 +77,7 @@ class WebTesting (unittest.TestCase):
 
     # test submitting fort data with test data
     def test_fort_submit(self):
-        self.Signin()  # sign into web server
+        self.signIn()  # sign into web server
         driver = self.driver
         driver.find_element_by_css_selector('a[href="fortniteSelect"]').click()  # select Apex game option
         driver.find_element_by_partial_link_text('Submit').click()  # select submission page
@@ -79,7 +95,7 @@ class WebTesting (unittest.TestCase):
 
     # test submitting hots data with test data
     def test_hots_submit(self):
-        self.Signin()  # sign into web server
+        self.signIn()  # sign into web server
         driver = self.driver
         driver.find_element_by_css_selector('a[href="hotsSelect"]').click()  # select Apex game option
         driver.find_element_by_partial_link_text('Submit').click()  # select submission page
@@ -99,7 +115,7 @@ class WebTesting (unittest.TestCase):
 
     # test viewing apex data
     def test_apex_view(self):
-        self.Signin()  # sign into web server
+        self.signIn()  # sign into web server
         driver = self.driver
         driver.find_element_by_css_selector('a[href="apexSelect"]').click()
         driver.find_element_by_partial_link_text('View').click()  # select view page
@@ -111,7 +127,7 @@ class WebTesting (unittest.TestCase):
 
     # test viewing fort data
     def test_fort_view(self):
-        self.Signin()  # sign into web server
+        self.signIn()  # sign into web server
         driver = self.driver
         driver.find_element_by_css_selector('a[href="fortniteSelect"]').click()
         driver.find_element_by_partial_link_text('View').click()  # select view page
@@ -124,7 +140,7 @@ class WebTesting (unittest.TestCase):
 
     # test viewing hots data
     def test_hots_view(self):
-        self.Signin()  # sign into web server
+        self.signIn()  # sign into web server
         driver = self.driver
         driver.find_element_by_css_selector('a[href="hotsSelect"]').click()
         driver.find_element_by_partial_link_text('View').click()  # select view page
