@@ -1,4 +1,4 @@
-//CRUD server
+// CRUD server
 package main
 
 import (
@@ -17,8 +17,8 @@ import (
 	"reflect"
 )
 
-//create appropriate game result entry and upload to db
-func createEntry(w http.ResponseWriter, r *http.Request)  {
+// create appropriate game result entry and upload to db
+func createEntry(_ http.ResponseWriter, r *http.Request)  {
 	params := mux.Vars(r)
 	if params["game"] == "apex" {
 		var game game.Apex
@@ -102,9 +102,9 @@ func createEntry(w http.ResponseWriter, r *http.Request)  {
 
 }
 
-//read requesting users game results, generate html table
-//of the results, and encode results and send them in
-//response body
+// read requesting users game results, generate html table
+// of the results, and encode results and send them in
+// response body
 func readEntry(w http.ResponseWriter, r *http.Request)  {
 	params := mux.Vars(r)
 	var templateFuncs = template.FuncMap{"rangeStruct": RangeStructer}
@@ -223,7 +223,7 @@ func readEntry(w http.ResponseWriter, r *http.Request)  {
 
 		headers := game.NewFort("User", "Date", "Game", "W/L", "Kills", "Place", "Mode", "Team")
 
-                games = append(games, headers)
+		games = append(games, headers)
 
 		games = append(games, gms...)
 
@@ -310,8 +310,8 @@ func readEntry(w http.ResponseWriter, r *http.Request)  {
 
 }
 
-//function to iterate through range of game results and
-//fill html table template
+// function to iterate through range of game results and
+// fill html table template
 func RangeStructer(args ...interface{}) []interface{} {
 	if len(args) == 0 {
 		return nil
@@ -330,8 +330,8 @@ func RangeStructer(args ...interface{}) []interface{} {
 	return out
 }
 
-//create mux router to listen on port 8000 and handle
-//POST & GET Requests
+// create mux router to listen on port 8000 and handle
+// POST & GET Requests
 func main()  {
 	r := mux.NewRouter()
 

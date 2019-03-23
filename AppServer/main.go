@@ -1,4 +1,4 @@
-//App server
+// App server
 package main
 
 import (
@@ -18,14 +18,14 @@ import (
 
 const CrudServer = ""
 
-//get DB credentials
+// get DB credentials
 func getCreds() hiddenCreds.Creds{
 	return hiddenCreds.GetCreds()
 }
 
-//parses the form in the request, checks if user is in
-//the db and credentials are correct, and redirects to
-//an error page or main screen
+// parses the form in the request, checks if user is in
+// the db and credentials are correct, and responds with
+// a good status code and username or a bad status code
 func signIn(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	data := r.PostForm
@@ -36,13 +36,15 @@ func signIn(w http.ResponseWriter, r *http.Request) {
 	if res == true{
 		fmt.Println(username + " signed in") //log user sign-in
 		w.WriteHeader(200)
+		w.Write([]byte(username))
 	}else {
 		w.WriteHeader(400)
 	}
 }
 
-//parses the form in the request, checks if user exists
-//already, and redirects to an error page or main screen
+// parses the form in the request, checks if user exists
+// already, and responds with a good status code and username
+// or a bad status code
 func createAccount(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	data := r.PostForm
@@ -53,13 +55,14 @@ func createAccount(w http.ResponseWriter, r *http.Request) {
 	if res == true{
 		fmt.Println(username + " account created") //log account creation
 		w.WriteHeader(200)
+		w.Write([]byte(username))
 	}else {
 		w.WriteHeader(400)
 	}
 }
 
-//take in a username and password and return a bool of
-//the validation
+// take in a username and password and return a bool of
+// the validation
 func checkPassword(username, password string) bool {
 	var dbPass string
 	creds := getCreds()
@@ -94,8 +97,8 @@ func checkPassword(username, password string) bool {
 	return false
 }
 
-//take in a username and password and return a bool of
-//the validation of creation
+// take in a username and password and return a bool of
+// the validation of creation
 func createUser(user_username, user_password string) bool {
 	creds := getCreds()
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
@@ -123,9 +126,9 @@ VALUES ($1, $2)`
 	return true
 }
 
-//parses the form in the request, creates correct game, and
-//POSTs the game to the CRUD server
-func submit(w http.ResponseWriter, r *http.Request){
+// parses the form in the request, creates correct game, and
+// POSTs the game to the CRUD server
+func submit(_ http.ResponseWriter, r *http.Request){
 	r.ParseForm()
 
 	if r.FormValue("game") == "apex" {
@@ -170,9 +173,9 @@ func submit(w http.ResponseWriter, r *http.Request){
 	}
 }
 
-//sends a get request to the CRUD server to retrieve the
-//specified user's game results and sends GET request contents
-//back to the initial requesting server
+// sends a get request to the CRUD server to retrieve the
+// specified user's game results and sends GET request contents
+// back to the initial requesting server
 func view(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	req := CrudServer + "/read/" + params["game"] + "/" + params["user"]
@@ -181,8 +184,8 @@ func view(w http.ResponseWriter, r *http.Request) {
 	resp.Write(w)
 }
 
-//create mux router to listen on port 8000 and handle
-//various requests
+// create mux router to listen on port 8000 and handle
+// various requests
 func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/signin", signIn).Methods("POST")

@@ -1,4 +1,4 @@
-//Web server
+// Web server
 package main
 
 import (
@@ -13,13 +13,15 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"time"
 )
 
 const AppServer =  ""
 
-//serves all static html to the web server by taking
-//in the request, reading the request url, and serving
-//the correct html based on the switch cases
+// serves all static html to the web server by taking
+// in the request, reading the request url, and serving
+// the correct html based on the switch cases.  Ensures
+// that the request is coming from a source that is validated
 func ServeStaticHTML(w http.ResponseWriter, r *http.Request) {
 	var fileToServe string
 
@@ -32,24 +34,34 @@ func ServeStaticHTML(w http.ResponseWriter, r *http.Request) {
 	case "/signinError":
 		fileToServe = "signinError.html"
 	case "/gameSelect":
+		ValidateCookie(w, r)  // ensure user is validated to access
 		fileToServe = "gameSelect.html"
 	case "/apexForm":
+		ValidateCookie(w, r)
 		fileToServe = "apexForm.html"
 	case "/fortniteForm":
+		ValidateCookie(w, r)
 		fileToServe = "forniteForm.html"
 	case "/hotsForm":
+		ValidateCookie(w, r)
 		fileToServe = "hotsForm.html"
 	case "/apexSelect":
+		ValidateCookie(w, r)
 		fileToServe = "apexSelect.html"
 	case "/fortniteSelect":
+		ValidateCookie(w, r)
 		fileToServe = "fortniteSelect.html"
 	case "/hotsSelect":
+		ValidateCookie(w, r)
 		fileToServe = "hotsSelect.html"
 	case "/viewApex":
+		ValidateCookie(w, r)
 		fileToServe = "viewApex.html"
 	case "/viewFortnite":
+		ValidateCookie(w, r)
 		fileToServe = "viewFortnite.html"
 	case "/viewHots":
+		ValidateCookie(w, r)
 		fileToServe = "viewHots.html"
 	default:
 		fileToServe = "index.html"
@@ -80,8 +92,8 @@ func HotsLogo (w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "hots_logo.jpg")
 }
 
-//recursively parses html and returns all content that
-//is within the tbody element
+// recursively parses html and returns all content that
+// is within the tbody element
 func getBody(doc *html.Node) (*html.Node, error) {
     var b *html.Node
     var f func(*html.Node)
@@ -100,7 +112,7 @@ func getBody(doc *html.Node) (*html.Node, error) {
     return nil, errors.New("Missing <tbody> in the node tree")
 }
 
-//takes in html node and returns string format
+// takes in html node and returns string format
 func renderNode(n *html.Node) string {
     var buf bytes.Buffer
     w := io.Writer(&buf)
@@ -108,10 +120,12 @@ func renderNode(n *html.Node) string {
     return buf.String()
 }
 
-//parses request form, gets the requested user's game results,
-//parses html table generated from GET call, and executes
-//table into template for response
+// parses request form, gets the requested user's game results,
+// parses html table generated from GET call, and executes
+// table into template for response
 func Results(w http.ResponseWriter, r *http.Request)  {
+	ValidateCookie(w, r)  // ensure user is validated to access
+
 	r.ParseForm()
 
 	resp, _ := http.Get(AppServer + "/view/" + r.FormValue( "game") + "/" + r.FormValue("user_name"))
@@ -144,9 +158,8 @@ func Results(w http.ResponseWriter, r *http.Request)  {
 	}
 }
 
-//POSTs the request to the AppServer, parses the request to,
-//find game type, and responds with the game types select
-//page
+// POSTs the request to the AppServer, parses the request to,
+// find game type, and redirects to the games select page
 func Submit (w http.ResponseWriter, r *http.Request) {
 	_, _ = http.Post(AppServer + "/submit", "application/x-www-form-urlencoded", r.Body)
 
@@ -166,9 +179,10 @@ func Submit (w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, redirect, 301)
 }
 
-//POSTs the request to the AppServer, reads the response header
-//to determine if sign-in was good or bad, and serves appropriate
-//web page
+// POSTs the request to the AppServer, reads the response status
+// code to determine if sign-in was good or bad, if good, sets a
+// cookie that expires in 24hrs with username, and redirects
+// to appropriate web page
 func Signin (w http.ResponseWriter, r *http.Request) {
 	resp, err := http.Post(AppServer + "/signin", "application/x-www-form-urlencoded", r.Body)
 
@@ -176,15 +190,28 @@ func Signin (w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 	}
 	if resp.StatusCode == 200 && err == nil{
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil{
+			log.Println(err)
+		}
+		user := string(body)
+		expire := time.Now().Add(time.Hour * 24)
+		cookie := http.Cookie{
+			Name:		"user",
+			Value:		user,
+			Expires:	expire,
+		}
+		http.SetCookie(w, &cookie)
 		http.Redirect(w, r, "/gameSelect", 301)
 	}else{
 		http.Redirect(w, r, "/signinError", 301)
 	}
 }
 
-//POSTs the request to the AppServer, reads the response header
-//to determine if account creation was good or bad, and serves
-//appropriate web page
+// POSTs the request to the AppServer, reads the response status
+// code to determine if creation was good or bad, if good, sets a
+// cookie that expires in 24hrs with username, and redirects
+// to appropriate web page
 func CreateAccount (w http.ResponseWriter, r *http.Request) {
 	resp, err := http.Post(AppServer + "/createAccount", "application/x-www-form-urlencoded", r.Body)
 
@@ -192,14 +219,46 @@ func CreateAccount (w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 	}
 	if resp.StatusCode == 200 && err == nil{
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil{
+			log.Println(err)
+		}
+		user := string(body)
+		expire := time.Now().Add(time.Hour * 24)
+		cookie := http.Cookie{
+			Name:		"user",
+			Value:		user,
+			Expires:	expire,
+		}
+		http.SetCookie(w, &cookie)
 		http.Redirect(w, r, "/gameSelect", 301)
 	}else{
 		http.Redirect(w, r, "/createError", 301)
 	}
 }
 
-//create mux router to listen on port 80, handle
-//all user interaction, and generate web content
+//	takes in a request and response writer and determines if
+//	the requesting client is already validated by looking at
+//	the cookies. If client does not have web server's cookie,
+//	it is redirected to sign-in screen.  If it does, function
+//	returns and lets handler continue processing
+func ValidateCookie (w http.ResponseWriter,  r *http.Request) {
+	var valid bool
+
+	for _, cookie := range r.Cookies() {
+		if cookie.Name == "user" {
+			valid = true
+			return
+		}
+	}
+
+	if !valid{
+		http.Redirect(w, r, "/", 301)
+	}
+}
+
+// create mux router to listen on port 80, handle
+// all user interaction, and generate web content
 func main() {
 	r := mux.NewRouter() //create router
 
