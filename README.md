@@ -35,6 +35,8 @@ System is hosted within an AWS default VPC with 3 EC2 instances, an RDS instance
 * Used [bcrypt](https://godoc.org/golang.org/x/crypto/bcrypt#GenerateFromPassword) to salt and hash passwords for storage in DB
 * Is not encrypting the password, but solves the issue of storing passwords in plain text
 - [ ] Implement a cookie for smoother results viewing
+* Added a cookie to be created when user signs in that expires after 24 hours
+* Implemented requirement for cookie to be present to access pages past sign-in/creation
 - [ ] Error handling & edge cases
 - [ ] Setup RR scheme & auto scaling policy for CRUD servers
 - [ ] Incorporate more games
