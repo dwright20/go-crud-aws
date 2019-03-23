@@ -41,7 +41,7 @@ func ServeStaticHTML(w http.ResponseWriter, r *http.Request) {
 		fileToServe = "apexForm.html"
 	case "/fortniteForm":
 		ValidateCookie(w, r)
-		fileToServe = "forniteForm.html"
+		fileToServe = "fortniteForm.html"
 	case "/hotsForm":
 		ValidateCookie(w, r)
 		fileToServe = "hotsForm.html"
@@ -237,11 +237,11 @@ func CreateAccount (w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//	takes in a request and response writer and determines if
-//	the requesting client is already validated by looking at
-//	the cookies. If client does not have web server's cookie,
-//	it is redirected to sign-in screen.  If it does, function
-//	returns and lets handler continue processing
+// takes in a request and response writer and determines if
+// the requesting client is already validated by looking at
+// the cookies. If client does not have web server's cookie,
+// it is redirected to sign-in screen.  If it does, function
+// returns and lets handler continue processing
 func ValidateCookie (w http.ResponseWriter,  r *http.Request) {
 	var valid bool
 

@@ -44,7 +44,6 @@ class WebTesting (unittest.TestCase):
         self.signIn()
         driver = self.driver
         cookie_list = driver.get_cookies()
-        print(cookie_list[0])
         worked = True if cookie_list[0].get(u'value') == u'testing' else False
         self.assertTrue(worked)  # determine if value is properly being set to user accessing site
 
