@@ -118,8 +118,6 @@ class WebTesting (unittest.TestCase):
         driver = self.driver
         driver.find_element_by_css_selector('a[href="apexSelect"]').click()
         driver.find_element_by_partial_link_text('View').click()  # select view page
-        driver.find_element_by_name("user_name").send_keys(USER)
-        driver.find_element_by_css_selector('button[type="submit"]').click()
         table = driver.find_element_by_css_selector('tbody').get_attribute('innerHTML')  # read table body html
         worked = True if USER and 'apex' in table else False
         self.assertTrue(worked)  # determine if table is presenting data for account
@@ -130,8 +128,6 @@ class WebTesting (unittest.TestCase):
         driver = self.driver
         driver.find_element_by_css_selector('a[href="fortniteSelect"]').click()
         driver.find_element_by_partial_link_text('View').click()  # select view page
-        driver.find_element_by_name("user_name").send_keys(USER)
-        driver.find_element_by_css_selector('button[type="submit"]').click()
         table = driver.find_element_by_css_selector('tbody').get_attribute('innerHTML')  # read table body html
         worked = True if USER and 'fort' in table else False
         self.assertTrue(worked)  # determine if table is presenting data for account
@@ -143,8 +139,6 @@ class WebTesting (unittest.TestCase):
         driver = self.driver
         driver.find_element_by_css_selector('a[href="hotsSelect"]').click()
         driver.find_element_by_partial_link_text('View').click()  # select view page
-        driver.find_element_by_name("user_name").send_keys(USER)
-        driver.find_element_by_css_selector('button[type="submit"]').click()
         table = driver.find_element_by_css_selector('tbody').get_attribute('innerHTML')  # read table body html
         worked = True if USER and 'hots' in table else False
         self.assertTrue(worked)  # determine if table is presenting data for account

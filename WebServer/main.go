@@ -126,9 +126,11 @@ func renderNode(n *html.Node) string {
 func Results(w http.ResponseWriter, r *http.Request)  {
 	ValidateCookie(w, r)  // ensure user is validated to access
 
-	r.ParseForm()
+	cookie := GetCookieValue(r)  // pull username
 
-	resp, _ := http.Get(AppServer + "/view/" + r.FormValue( "game") + "/" + r.FormValue("user_name"))
+	params := mux.Vars(r)  // pull game
+
+	resp, _ := http.Get(AppServer + "/view/" + params["game"] + "/" + cookie)
 
 	body, _ := ioutil.ReadAll(resp.Body)
 
@@ -243,18 +245,27 @@ func CreateAccount (w http.ResponseWriter, r *http.Request) {
 // it is redirected to sign-in screen.  If it does, function
 // returns and lets handler continue processing
 func ValidateCookie (w http.ResponseWriter,  r *http.Request) {
-	var valid bool
-
 	for _, cookie := range r.Cookies() {
 		if cookie.Name == "user" {
-			valid = true
 			return
 		}
 	}
 
-	if !valid{
-		http.Redirect(w, r, "/", 301)
+	http.Redirect(w, r, "/", 301)
+}
+
+// takes in a request and reads the cookie content to find
+// the cookie value of the cookie created upon sign-in and
+// returns it as a string
+func GetCookieValue (r *http.Request) string {
+	var val string
+
+	for _, cookie := range r.Cookies() {
+		if cookie.Name == "user" {
+			val = cookie.Value
+		}
 	}
+	return val
 }
 
 // create mux router to listen on port 80, handle
@@ -274,10 +285,7 @@ func main() {
 	r.HandleFunc("/apexSelect", ServeStaticHTML)
 	r.HandleFunc("/fortniteSelect", ServeStaticHTML)
 	r.HandleFunc("/hotsSelect", ServeStaticHTML)
-	r.HandleFunc("/viewApex", ServeStaticHTML)
-	r.HandleFunc("/viewFortnite", ServeStaticHTML)
-	r.HandleFunc("/viewHots", ServeStaticHTML)
-	r.HandleFunc("/results", Results)
+	r.HandleFunc("/results/{game}", Results)
 
 	//style sheet
 	r.HandleFunc("/style.css", Style)
