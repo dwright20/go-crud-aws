@@ -284,7 +284,7 @@ func NotFound (w http.ResponseWriter, r *http.Request) {
 func main() {
 	r := mux.NewRouter() //create router
 
-	//html pages
+	// html pages
 	r.HandleFunc("/", ServeStaticHTML)
 	r.HandleFunc("/create", ServeStaticHTML)
 	r.HandleFunc("/createError", ServeStaticHTML)
@@ -298,19 +298,20 @@ func main() {
 	r.HandleFunc("/hotsSelect", ServeStaticHTML)
 	r.HandleFunc("/results/{game}", Results)
 
-	//style sheet
+	// style sheet
 	r.HandleFunc("/style.css", Style)
 
-	//images
+	// images
 	r.HandleFunc("/hots_logo.jpg", HotsLogo)
 	r.HandleFunc("/apex_legends_logo.jpg", ApexLogo)
 	r.HandleFunc("/fortnite_logo.jpg", FortLogo)
 
-	//form handling
+	// form handling
 	r.HandleFunc("/signin", Signin)
 	r.HandleFunc("/createAccount", CreateAccount)
 	r.HandleFunc("/submit", Submit)
 
+	// catch-all
 	r.NotFoundHandler = http.HandlerFunc(NotFound)
 
 	log.Fatal(http.ListenAndServe(":80", r))
