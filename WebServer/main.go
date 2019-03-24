@@ -268,6 +268,17 @@ func GetCookieValue (r *http.Request) string {
 	return val
 }
 
+// takes in all requests that are for a path not specified
+// and redirects them to the game select page if they
+// already have a cookie or the sign-in page if they do not
+func NotFound (w http.ResponseWriter, r *http.Request) {
+	if GetCookieValue(r) == "" {
+		http.Redirect(w, r, "/", 301)
+	} else {
+		http.Redirect(w, r, "/gameSelect", 301)
+	}
+}
+
 // create mux router to listen on port 80, handle
 // all user interaction, and generate web content
 func main() {
@@ -299,6 +310,8 @@ func main() {
 	r.HandleFunc("/signin", Signin)
 	r.HandleFunc("/createAccount", CreateAccount)
 	r.HandleFunc("/submit", Submit)
+
+	r.NotFoundHandler = http.HandlerFunc(NotFound)
 
 	log.Fatal(http.ListenAndServe(":80", r))
 }
