@@ -8,6 +8,7 @@ System is hosted within an AWS default VPC with 3 EC2 instances, an RDS instance
 - Interacts with Client & App server
 - Runs on Go
 - Stores all HTML/CSS files
+- Handles cookie
 ### App Server
 - Handles all requests from Web server
 - Interacts with Credentials DB (RDS Server) CRUD server, & Web server
@@ -35,10 +36,10 @@ System is hosted within an AWS default VPC with 3 EC2 instances, an RDS instance
 * Used [bcrypt](https://godoc.org/golang.org/x/crypto/bcrypt#GenerateFromPassword) to salt and hash passwords for storage in DB
 * Is not encrypting the password, but solves the issue of storing passwords in plain text
 - [x] Implement a cookie for smoother results viewing
-* Added a cookie to be created when user signs in that expires after 24 hours
-* Implemented requirement for cookie to be present to access pages past sign-in/creation
+* Added a cookie that is created when user signs in that expires after 24 hours
+* Cookie required to access pages past sign-in/creation
 * Streamlined process for viewing game results by leveraging a cookie
-* Now skips another webpage that skips requesting user's username to retrieve results
+* Now skips a webpage that requests user's username to retrieve results
 * Ensures user can only see their own results
 - [ ] Error handling & edge cases
 - [ ] Setup RR scheme & auto scaling policy for CRUD servers
