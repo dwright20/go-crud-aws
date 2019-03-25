@@ -61,7 +61,6 @@ class WebTesting (unittest.TestCase):
         driver.find_element_by_css_selector('a[href="apexSelect"]').click()  # select Apex game option
         driver.find_element_by_partial_link_text('Submit').click()  # select submission page
         # below finds fields of submission form and sends mock data
-        driver.find_element_by_name("user_name").send_keys(USER)
         driver.find_element_by_name("result").send_keys('loss')
         driver.find_element_by_name("legend").send_keys("testlegend")
         driver.find_element_by_name("kills").send_keys('0')
@@ -81,7 +80,6 @@ class WebTesting (unittest.TestCase):
         driver.find_element_by_css_selector('a[href="fortniteSelect"]').click()  # select Apex game option
         driver.find_element_by_partial_link_text('Submit').click()  # select submission page
         # below finds fields of submission form and sends mock data
-        driver.find_element_by_name("user_name").send_keys(USER)
         driver.find_element_by_name("result").send_keys('loss')
         driver.find_element_by_name("kills").send_keys('0')
         driver.find_element_by_name("placement").send_keys('1')
@@ -99,7 +97,6 @@ class WebTesting (unittest.TestCase):
         driver.find_element_by_css_selector('a[href="hotsSelect"]').click()  # select Apex game option
         driver.find_element_by_partial_link_text('Submit').click()  # select submission page
         # below finds fields of submission form and sends mock data
-        driver.find_element_by_name("user_name").send_keys(USER)
         driver.find_element_by_name("result").send_keys('loss')
         driver.find_element_by_name("hero").send_keys("testhero")
         driver.find_element_by_name("kills").send_keys('0')

@@ -163,7 +163,8 @@ func Results(w http.ResponseWriter, r *http.Request)  {
 // POSTs the request to the AppServer, parses the request to,
 // find game type, and redirects to the games select page
 func Submit (w http.ResponseWriter, r *http.Request) {
-	_, _ = http.Post(AppServer + "/submit", "application/x-www-form-urlencoded", r.Body)
+	user := GetCookieValue(r)
+	_, _ = http.Post(AppServer + "/submit/" + user, "application/x-www-form-urlencoded", r.Body)
 
 	r.ParseForm()
 	game := r.FormValue("game")

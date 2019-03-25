@@ -129,10 +129,11 @@ VALUES ($1, $2)`
 // parses the form in the request, creates correct game, and
 // POSTs the game to the CRUD server
 func submit(_ http.ResponseWriter, r *http.Request){
+	params := mux.Vars(r)
 	r.ParseForm()
 
 	if r.FormValue("game") == "apex" {
-		game := game.NewApex(r.FormValue("user_name"), time.Now().Format(time.RFC822), r.FormValue("game"),r.FormValue("result"),r.FormValue("legend"),r.FormValue("kills"),r.FormValue("placement"),r.FormValue("damage"),r.FormValue("time"),r.FormValue("teammates"))
+		game := game.NewApex(params["user"], time.Now().Format(time.RFC822), r.FormValue("game"),r.FormValue("result"),r.FormValue("legend"),r.FormValue("kills"),r.FormValue("placement"),r.FormValue("damage"),r.FormValue("time"),r.FormValue("teammates"))
 
 		fmt.Println(game)//log created game
 
@@ -145,7 +146,7 @@ func submit(_ http.ResponseWriter, r *http.Request){
 			log.Print("Posting error: ", err)
 		}
 	} else if r.FormValue("game") == "fort" {
-		game := game.NewFort(r.FormValue("user_name"), time.Now().Format(time.RFC822),r.FormValue("game"),r.FormValue("result"),r.FormValue("kills"),r.FormValue("placement"),r.FormValue("mode"), r.FormValue("teammates"))
+		game := game.NewFort(params["user"], time.Now().Format(time.RFC822),r.FormValue("game"),r.FormValue("result"),r.FormValue("kills"),r.FormValue("placement"),r.FormValue("mode"), r.FormValue("teammates"))
 
 		fmt.Println(game)//log created game
 
@@ -158,7 +159,7 @@ func submit(_ http.ResponseWriter, r *http.Request){
 			log.Print("Posting error: ", err)
 		}
 	} else {
-		game := game.NewHots(r.FormValue("user_name"), time.Now().Format(time.RFC822), r.FormValue("game"),r.FormValue("result"),r.FormValue("hero"),r.FormValue("kills"),r.FormValue("deaths"),r.FormValue("assists"),r.FormValue("time"),r.FormValue("map"))
+		game := game.NewHots(params["user"], time.Now().Format(time.RFC822), r.FormValue("game"),r.FormValue("result"),r.FormValue("hero"),r.FormValue("kills"),r.FormValue("deaths"),r.FormValue("assists"),r.FormValue("time"),r.FormValue("map"))
 
 		fmt.Println(game)//log created game
 
@@ -190,7 +191,7 @@ func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/signin", signIn).Methods("POST")
 	r.HandleFunc("/createAccount", createAccount).Methods("POST")
-	r.HandleFunc("/submit", submit).Methods("POST")
+	r.HandleFunc("/submit/{user}", submit).Methods("POST")
 	r.HandleFunc("/view/{game}/{user}", view).Methods("GET")
 	log.Fatal(http.ListenAndServe(":8000", r))
 }
