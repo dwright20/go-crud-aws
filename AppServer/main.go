@@ -135,7 +135,7 @@ func submit(_ http.ResponseWriter, r *http.Request){
 	if r.FormValue("game") == "apex" {
 		game := game.NewApex(params["user"], time.Now().Format(time.RFC822), r.FormValue("game"),r.FormValue("result"),r.FormValue("legend"),r.FormValue("kills"),r.FormValue("placement"),r.FormValue("damage"),r.FormValue("time"),r.FormValue("teammates"))
 
-		fmt.Println(game)//log created game
+		log.Print(game)//log created game
 
 		b := new(bytes.Buffer)
 		json.NewEncoder(b).Encode(game)
@@ -148,7 +148,7 @@ func submit(_ http.ResponseWriter, r *http.Request){
 	} else if r.FormValue("game") == "fort" {
 		game := game.NewFort(params["user"], time.Now().Format(time.RFC822),r.FormValue("game"),r.FormValue("result"),r.FormValue("kills"),r.FormValue("placement"),r.FormValue("mode"), r.FormValue("teammates"))
 
-		fmt.Println(game)//log created game
+		log.Print(game)//log created game
 
 		b := new(bytes.Buffer)
 		json.NewEncoder(b).Encode(game)
@@ -161,7 +161,7 @@ func submit(_ http.ResponseWriter, r *http.Request){
 	} else {
 		game := game.NewHots(params["user"], time.Now().Format(time.RFC822), r.FormValue("game"),r.FormValue("result"),r.FormValue("hero"),r.FormValue("kills"),r.FormValue("deaths"),r.FormValue("assists"),r.FormValue("time"),r.FormValue("map"))
 
-		fmt.Println(game)//log created game
+		log.Print(game)//log created game
 
 		b := new(bytes.Buffer)
 		json.NewEncoder(b).Encode(game)
