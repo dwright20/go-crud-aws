@@ -99,7 +99,7 @@ func checkPassword(username, password string) bool {
 
 // take in a username and password and return a bool of
 // the validation of creation
-func createUser(user_username, user_password string) bool {
+func createUser(username, password string) bool {
 	creds := getCreds()
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",
@@ -111,12 +111,12 @@ func createUser(user_username, user_password string) bool {
 		return false
 	}
 
-	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(user_password), 8)
+	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(password), 8)
 
 	sqlStatement := `
 INSERT INTO postgres.public.users (user_name, user_pass)
 VALUES ($1, $2)`
-	_, err = db.Exec(sqlStatement, user_username, hashedPassword)
+	_, err = db.Exec(sqlStatement, username, hashedPassword)
 	if err != nil {
 		log.Println(err)
 		return false
