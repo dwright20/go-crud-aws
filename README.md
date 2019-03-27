@@ -53,12 +53,12 @@ System is hosted within on AWS  with 3 EC2 instances, an API gateway, various La
 * Streamlined process for viewing game results by leveraging a cookie
 * Now skips a webpage that requests user's username to retrieve results
 * Ensures user can only see their own results
-- [] Setup fail-over 
+- [x] Setup fail-over 
 * Setup fail-over to be done at the server level by the go applications
 * Server will check if primary server is up, if it is not, it will send request to the fail-over API Gateway backed by Lambda
 * If CRUD Server is down, requests will still go to App Server prior to fail-over gateway
 * If App Server is down, all requests will go to fail-over gateway and will not reach CRUD server even if it is up
-- [] Setup RR scheme & auto scaling policy for CRUD servers
+- [ ] Setup RR scheme & auto scaling policy for CRUD servers
 - [ ] Error handling & edge cases
 - [ ] Incorporate more games
 ## Acknowledgements
