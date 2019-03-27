@@ -1,14 +1,17 @@
-// CRUD server
+// CRUD Server read functionality lambda
 package main
 
 import (
 	"game"
 	"bytes"
 	"encoding/json"
+	"github.com/aws/aws-lambda-go/events"
+	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
+	"github.com/awslabs/aws-lambda-go-api-proxy/gorillamux"
 	"github.com/gorilla/mux"
 	"html/template"
 	"log"
@@ -16,80 +19,13 @@ import (
 	"reflect"
 )
 
-// create appropriate game result entry and upload to db
-func createEntry(_ http.ResponseWriter, r *http.Request)  {
-	params := mux.Vars(r)
+var muxLambda *gorillamux.GorillaMuxAdapter  // initialize mux lambda adapter
 
-	log.Print("starting db session...")
-
-	sess, err := session.NewSession(&aws.Config{
-		Region: aws.String("us-east-1"),
-	})
-
-	if err != nil{
-		log.Print(err.Error())
-	}
-
-	// create dynamodb client
-	svc := dynamodb.New(sess)
-
-	if params["game"] == "apex" {
-		var game game.Apex
-		_ = json.NewDecoder(r.Body).Decode(&game) //decode request contents into game
-
-		av, err := dynamodbattribute.MarshalMap(&game)
-
-		input := &dynamodb.PutItemInput{
-			Item: av,
-			TableName: aws.String("results-apex"),
-		}
-
-		_, err = svc.PutItem(input) //put item in db
-
-		//log error if applicable
-		if err != nil {
-			log.Println("Got error calling PutItem:")
-			log.Println(err.Error())
-		}
-		log.Println(game, "Added to Dynamodb")  //log newly created game
-	} else if params["game"] == "fort" {
-		var game game.Fort
-		_ = json.NewDecoder(r.Body).Decode(&game)
-
-		av, err := dynamodbattribute.MarshalMap(&game)
-
-		input := &dynamodb.PutItemInput{
-			Item: av,
-			TableName: aws.String("results-fort"),
-		}
-
-		_, err = svc.PutItem(input)
-
-		if err != nil {
-			log.Println("Got error calling PutItem:")
-			log.Println(err.Error())
-		}
-		log.Println(game, "Added to Dynamodb")
-
-	} else if params["game"] == "hots"{
-		var game game.Hots
-		_ = json.NewDecoder(r.Body).Decode(&game)
-
-		av, err := dynamodbattribute.MarshalMap(&game)
-
-		input := &dynamodb.PutItemInput{
-			Item: av,
-			TableName: aws.String("results-hots"),
-		}
-
-		_, err = svc.PutItem(input)
-
-		if err != nil {
-			log.Println("Got error calling PutItem:")
-			log.Println(err.Error())
-		}
-		log.Println(game, "Added to Dynamodb")
-	}
+func init() {
+	log.Printf("Create game Mux start...")
+	r := mux.NewRouter()
+	r.HandleFunc("/read/{game}/{user}", readEntry).Methods("GET")
+	muxLambda = gorillamux.New(r)
 }
 
 // read requesting users game results, generate html table
@@ -123,7 +59,6 @@ func readEntry(w http.ResponseWriter, r *http.Request)  {
 		Region: aws.String("us-east-1")},
 	)
 
-	// create dynamodb client
 	svc := dynamodb.New(sess)
 
 	if params["game"] == "apex" {
@@ -162,12 +97,12 @@ func readEntry(w http.ResponseWriter, r *http.Request)  {
 
 		t, err = t.Parse(htmlTemplate)
 		if err != nil {
-			log.Print(err)
+			panic(err)
 		}
 
 		err = t.Execute(&tpl, games) //execute template and pass slice of results into template function
 		if err != nil {
-			log.Print(err)
+			panic(err)
 		}
 
 		results := tpl.String() //convert generated html content into string
@@ -216,12 +151,12 @@ func readEntry(w http.ResponseWriter, r *http.Request)  {
 
 		t, err = t.Parse(htmlTemplate)
 		if err != nil {
-			log.Print(err)
+			panic(err)
 		}
 
 		err = t.Execute(&tpl, games)
 		if err != nil {
-			log.Print(err)
+			panic(err)
 		}
 
 		results := tpl.String()
@@ -269,12 +204,12 @@ func readEntry(w http.ResponseWriter, r *http.Request)  {
 
 		t, err = t.Parse(htmlTemplate)
 		if err != nil {
-			log.Print(err)
+			panic(err)
 		}
 
 		err = t.Execute(&tpl, games)
 		if err != nil {
-			log.Print(err)
+			panic(err)
 		}
 
 		results := tpl.String()
@@ -286,6 +221,7 @@ func readEntry(w http.ResponseWriter, r *http.Request)  {
 		b.WriteTo(w)
 		log.Println(params["user"] + " Hots data retrieved.")
 	}
+
 }
 
 // function to iterate through range of game results and
@@ -308,17 +244,12 @@ func RangeStructer(args ...interface{}) []interface{} {
 	return out
 }
 
-// responds to health check request with a good status code
-func healthStatus(w http.ResponseWriter, _ *http.Request) {
-	w.WriteHeader(200)
+// pass request into mux proxy
+func Handler(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	return muxLambda.Proxy(req)
 }
 
-// create mux router to listen on port 8000 and handle
-// POST & GET Requests
-func main()  {
-	r := mux.NewRouter()
-	r.HandleFunc("/create/{game}", createEntry).Methods("POST")
-	r.HandleFunc("/read/{game}/{user}", readEntry).Methods("GET")
-	r.HandleFunc("/health", healthStatus).Methods("GET")
-	log.Fatal(http.ListenAndServe(":8000", r))
+// start the lambda mux router
+func main() {
+	lambda.Start(Handler)
 }

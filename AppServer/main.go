@@ -16,7 +16,10 @@ import (
 	"time"
 )
 
-const CrudServer = ""
+const CrudServer = ""  // Crud server address
+const FailOverApi = ""  // Fail-over api address
+
+var server string  // server that will be routed to
 
 // get DB credentials
 func getCreds() hiddenCreds.Creds{
@@ -34,7 +37,7 @@ func signIn(w http.ResponseWriter, r *http.Request) {
 
 	res := checkPassword(username, password)
 	if res == true{
-		fmt.Println(username + " signed in") //log user sign-in
+		log.Println(username + " signed in") //log user sign-in
 		w.WriteHeader(200)
 		w.Write([]byte(username))
 	}else {
@@ -53,7 +56,7 @@ func createAccount(w http.ResponseWriter, r *http.Request) {
 
 	res := createUser(username, password)
 	if res == true{
-		fmt.Println(username + " account created") //log account creation
+		log.Println(username + " account created") //log account creation
 		w.WriteHeader(200)
 		w.Write([]byte(username))
 	}else {
@@ -81,7 +84,7 @@ func checkPassword(username, password string) bool {
 
 	switch err := row.Scan(&dbPass); err {
 	case sql.ErrNoRows:
-		fmt.Println("No rows were returned!")
+		log.Println("No rows were returned!")
 	case nil:
 		hashAndPass := bcrypt.CompareHashAndPassword([]byte(dbPass), []byte(password))
 		if hashAndPass == nil{
@@ -127,10 +130,11 @@ VALUES ($1, $2)`
 }
 
 // parses the form in the request, creates correct game, and
-// POSTs the game to the CRUD server
+// POSTs the game to the CRUD server or fail-over API
 func submit(_ http.ResponseWriter, r *http.Request){
 	params := mux.Vars(r)
 	r.ParseForm()
+	healthCheck()
 
 	if r.FormValue("game") == "apex" {
 		game := game.NewApex(params["user"], time.Now().Format(time.RFC822), r.FormValue("game"),r.FormValue("result"),r.FormValue("legend"),r.FormValue("kills"),r.FormValue("placement"),r.FormValue("damage"),r.FormValue("time"),r.FormValue("teammates"))
@@ -140,7 +144,7 @@ func submit(_ http.ResponseWriter, r *http.Request){
 		b := new(bytes.Buffer)
 		json.NewEncoder(b).Encode(game)
 		//Post encoded game to CRUD server
-		_, err := http.Post(CrudServer + "/create/apex", "application/json", b)
+		_, err := http.Post(server + "/create/apex", "application/json", b)
 
 		if err !=nil{
 			log.Print("Posting error: ", err)
@@ -153,7 +157,7 @@ func submit(_ http.ResponseWriter, r *http.Request){
 		b := new(bytes.Buffer)
 		json.NewEncoder(b).Encode(game)
 		//Post encoded game to CRUD server
-		_, err := http.Post(CrudServer + "/create/fort", "application/json", b)
+		_, err := http.Post(server + "/create/fort", "application/json", b)
 
 		if err !=nil{
 			log.Print("Posting error: ", err)
@@ -166,7 +170,7 @@ func submit(_ http.ResponseWriter, r *http.Request){
 		b := new(bytes.Buffer)
 		json.NewEncoder(b).Encode(game)
 		//Post encoded game to CRUD server
-		_, err := http.Post(CrudServer + "/create/hots", "application/json", b)
+		_, err := http.Post(server + "/create/hots", "application/json", b)
 
 		if err !=nil{
 			log.Print("Posting error: ", err)
@@ -174,15 +178,36 @@ func submit(_ http.ResponseWriter, r *http.Request){
 	}
 }
 
-// sends a get request to the CRUD server to retrieve the
-// specified user's game results and sends GET request contents
-// back to the initial requesting server
+// sends a get request to the CRUD server or fail-over API
+// to retrieve the specified user's game results and sends
+// GET request contents back to the initial requesting server
 func view(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	req := CrudServer + "/read/" + params["game"] + "/" + params["user"]
-	fmt.Println("Reading " + params["user"] + "-" + params["game"])
+	healthCheck()
+	req := server + "/read/" + params["game"] + "/" + params["user"]
+	log.Println("Reading " + params["user"] + "-" + params["game"])
 	resp, _ := http.Get(req)
 	resp.Write(w)
+}
+
+// responds to health check request with a good status code
+func healthStatus(w http.ResponseWriter, _ *http.Request) {
+	w.WriteHeader(200)
+}
+
+// sends a GET request to the crud server to determine if it
+// is running.  If it receives an error or anything other
+// than a 200 status code, it sets the server to the failover,
+// otherwise it sets it to the crud server.
+func healthCheck (){
+	resp, err := http.Get(CrudServer + "/health")
+
+	if err != nil || resp.StatusCode != 200{
+		log.Print("CRUD Server down!\n", err)
+		server = FailOverApi
+	} else {
+		server = CrudServer
+	}
 }
 
 // create mux router to listen on port 8000 and handle
@@ -193,5 +218,6 @@ func main() {
 	r.HandleFunc("/createAccount", createAccount).Methods("POST")
 	r.HandleFunc("/submit/{user}", submit).Methods("POST")
 	r.HandleFunc("/view/{game}/{user}", view).Methods("GET")
+	r.HandleFunc("/health", healthStatus).Methods("GET")
 	log.Fatal(http.ListenAndServe(":8000", r))
 }

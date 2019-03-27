@@ -1,8 +1,10 @@
 # Go, CRUD, AWS
 Go, CRUD, AWS is a project I am working on to get a better understanding of Go(Golang), CRUD functionality, and HTTP while hosting it all on AWS. The system works as a storage system for a user's game results in Apex Legends, Fortnite, and Heroes of the Storm.  The user can retrieve their uploaded results and produce a table for each specific game.
 ## Design
-![Architecture Diagram](https://github.com/dwright20/go-crud-aws/blob/master/Images/ArchitectureDiagram.jpg)
-System is hosted within an AWS default VPC with 3 EC2 instances, an RDS instance, & DynamoDB  tables.
+### [Design 1](https://github.com/dwright20/go-crud-aws/blob/master/Images/ArchitectureDiagram.jpg)
+![Architecture Diagram](https://github.com/dwright20/go-crud-aws/blob/master/Images/ArchitectureDiagram2.jpeg)
+
+System is hosted within on AWS  with 3 EC2 instances, an API gateway, various Lambda functions, an RDS instance, & DynamoDB  tables.
 ### Web Server
 - Handles all User/Client interaction
 - Interacts with Client & App server
@@ -21,6 +23,16 @@ System is hosted within an AWS default VPC with 3 EC2 instances, an RDS instance
 ### Credentials DB
 - Database for sign-in credentials
 - Runs on PostgreSQL
+### Back-up Gateway
+- AWS API Gateway
+- Proxies all requests to appropriate Lambda function
+- If request comes from Web Server, can directly call CRUD functions if needed
+### App Functions
+- Same functionality as App Server
+- Runs on Go
+### CRUD Functions
+- Same functionality as CRUD Server
+- Runs on GO
 ### Results DB
 - Database for game results
 - Individual table for each game 
@@ -41,8 +53,13 @@ System is hosted within an AWS default VPC with 3 EC2 instances, an RDS instance
 * Streamlined process for viewing game results by leveraging a cookie
 * Now skips a webpage that requests user's username to retrieve results
 * Ensures user can only see their own results
+- [] Setup fail-over 
+* Setup fail-over to be done at the server level by the go applications
+* Server will check if primary server is up, if it is not, it will send request to the fail-over API Gateway backed by Lambda
+* If CRUD Server is down, requests will still go to App Server prior to fail-over gateway
+* If App Server is down, all requests will go to fail-over gateway and will not reach CRUD server even if it is up
+- [] Setup RR scheme & auto scaling policy for CRUD servers
 - [ ] Error handling & edge cases
-- [ ] Setup RR scheme & auto scaling policy for CRUD servers
 - [ ] Incorporate more games
 ## Acknowledgements
 Some resources that I found very helpful:

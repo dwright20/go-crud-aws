@@ -16,7 +16,10 @@ import (
 	"time"
 )
 
-const AppServer =  ""
+const AppServer = ""  // App Server address
+const FailOverApi = ""  // Fail-over server address
+
+var server string  // server that will be routed too
 
 // serves all static html to the web server by taking
 // in the request, reading the request url, and serving
@@ -126,11 +129,13 @@ func renderNode(n *html.Node) string {
 func Results(w http.ResponseWriter, r *http.Request)  {
 	ValidateCookie(w, r)  // ensure user is validated to access
 
+	healthCheck()  // determine which server to use
+
 	cookie := GetCookieValue(r)  // pull username
 
 	params := mux.Vars(r)  // pull game
 
-	resp, _ := http.Get(AppServer + "/view/" + params["game"] + "/" + cookie)
+	resp, _ := http.Get(server + "/view/" + params["game"] + "/" + cookie)
 
 	body, _ := ioutil.ReadAll(resp.Body)
 
@@ -160,11 +165,13 @@ func Results(w http.ResponseWriter, r *http.Request)  {
 	}
 }
 
-// POSTs the request to the AppServer, parses the request to,
-// find game type, and redirects to the games select page
+// POSTs the request to the appropriate server, parses
+// the request to, find game type, and redirects to the
+// games select page
 func Submit (w http.ResponseWriter, r *http.Request) {
 	user := GetCookieValue(r)
-	_, _ = http.Post(AppServer + "/submit/" + user, "application/x-www-form-urlencoded", r.Body)
+	healthCheck()  // determine which server to use
+	_, _ = http.Post(server + "/submit/" + user, "application/x-www-form-urlencoded", r.Body)
 
 	r.ParseForm()
 	game := r.FormValue("game")
@@ -182,12 +189,15 @@ func Submit (w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, redirect, 301)
 }
 
-// POSTs the request to the AppServer, reads the response status
-// code to determine if sign-in was good or bad, if good, sets a
-// cookie that expires in 24hrs with username, and redirects
-// to appropriate web page
+// POSTs the request to the appropriate server, reads the
+// response status code to determine if sign-in was good
+// or bad, if good, sets a cookie that expires in 24hrs
+// with username, and redirects to appropriate web page
 func Signin (w http.ResponseWriter, r *http.Request) {
-	resp, err := http.Post(AppServer + "/signin", "application/x-www-form-urlencoded", r.Body)
+	healthCheck()  // determine which server to use
+	resp, err := http.Post(server + "/signin", "application/x-www-form-urlencoded", r.Body)
+
+	print(resp.StatusCode)
 
 	if err != nil{
 		log.Println(err)
@@ -211,12 +221,13 @@ func Signin (w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// POSTs the request to the AppServer, reads the response status
-// code to determine if creation was good or bad, if good, sets a
-// cookie that expires in 24hrs with username, and redirects
-// to appropriate web page
+// POSTs the request to the appropriate server, reads the
+// response status code to determine if creation was good
+// or bad, if good, sets a cookie that expires in 24hrs with
+// username, and redirects to appropriate web page
 func CreateAccount (w http.ResponseWriter, r *http.Request) {
-	resp, err := http.Post(AppServer + "/createAccount", "application/x-www-form-urlencoded", r.Body)
+	healthCheck()  // determine which server to use
+	resp, err := http.Post(server + "/createAccount", "application/x-www-form-urlencoded", r.Body)
 
 	if err != nil{
 		log.Println(err)
@@ -277,6 +288,21 @@ func NotFound (w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", 301)
 	} else {
 		http.Redirect(w, r, "/gameSelect", 301)
+	}
+}
+
+// sends a GET request to the app server to determine if it
+// is running.  If it receives an error or anything other
+// than a 200 status code, it sets the server to the failover,
+// otherwise it sets it to the app server.
+func healthCheck (){
+	resp, err := http.Get(AppServer + "/health")
+
+	if err != nil || resp.StatusCode != 200 {
+		log.Print("App Server down!\n", err)
+		server = FailOverApi
+	}else {
+		server = AppServer
 	}
 }
 
