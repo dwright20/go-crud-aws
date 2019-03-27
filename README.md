@@ -4,7 +4,7 @@ Go, CRUD, AWS is a project I am working on to get a better understanding of Go(G
 ### [Design 1](https://github.com/dwright20/go-crud-aws/blob/master/Images/ArchitectureDiagram.jpg)
 ![Architecture Diagram](https://github.com/dwright20/go-crud-aws/blob/master/Images/ArchitectureDiagram2.jpeg)
 
-System is hosted within on AWS  with 3 EC2 instances, an API gateway, various Lambda functions, an RDS instance, & DynamoDB  tables.
+System is hosted on AWS with 3 EC2 instances, an API gateway, various Lambda functions, RDS, & DynamoDB  tables.
 ### Web Server
 - Handles all User/Client interaction
 - Interacts with Client & App server
@@ -13,7 +13,7 @@ System is hosted within on AWS  with 3 EC2 instances, an API gateway, various La
 - Handles cookie
 ### App Server
 - Handles all requests from Web server
-- Interacts with Credentials DB (RDS Server) CRUD server, & Web server
+- Interacts with Credentials DB (RDS) CRUD server, & Web server
 - Runs on Go
 ### CRUD Server
 - Handles all requests from App server
@@ -67,3 +67,4 @@ Some resources that I found very helpful:
 * [Go on AWS](https://hackernoon.com/deploying-a-go-application-on-aws-ec2-76390c09c2c5)
 * [HTML Parsing](https://stackoverflow.com/questions/30109061/golang-parse-html-extract-all-content-with-body-body-tags)
 * [Generate HTML content](https://stackoverflow.com/questions/19991124/go-template-html-iteration-to-generate-table-from-struct)
+* [AWS Lambda Go Api Proxy](https://github.com/awslabs/aws-lambda-go-api-proxy)
