@@ -2,6 +2,7 @@
 Go, CRUD, AWS is a project I am working on to get a better understanding of Go(Golang), CRUD functionality, and HTTP while hosting it all on AWS. The system works as a storage system for a user's game results in Apex Legends, Fortnite, and Heroes of the Storm.  The user can retrieve their uploaded results and produce a table for each specific game.
 ## Design
 ### [Design 1](https://github.com/dwright20/go-crud-aws/blob/master/Images/ArchitectureDiagram.jpg)
+### Current Design:
 ![Architecture Diagram](https://github.com/dwright20/go-crud-aws/blob/master/Images/ArchitectureDiagram2.jpeg)
 
 System is hosted on AWS with 3 EC2 instances, an API gateway, various Lambda functions, RDS, & DynamoDB  tables.
