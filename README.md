@@ -27,7 +27,7 @@ System is hosted on AWS with 3 EC2 instances, an API gateway, various Lambda fun
 ### Back-up Gateway
 - AWS API Gateway
 - Proxies all requests to appropriate Lambda function
-- If request comes from Web Server, can directly call CRUD functions if needed
+- If request comes from Web Server, can directly call CRUD functions
 ### App Functions
 - Same functionality as App Server
 - Runs on Go
@@ -55,8 +55,8 @@ System is hosted on AWS with 3 EC2 instances, an API gateway, various Lambda fun
 * Now skips a webpage that requests user's username to retrieve results
 * Ensures user can only see their own results
 - [x] Setup fail-over 
-* Setup fail-over to be done at the server level by the go applications
-* Server will check if primary server is up, if it is not, it will send request to the fail-over API Gateway backed by Lambda
+* To be done at the server level by the go applications
+* Server will check if primary path server is up; if it is not, it will send request to the fail-over API Gateway backed by Lambda
 * If CRUD Server is down, requests will still go to App Server prior to fail-over gateway
 * If App Server is down, all requests will go to fail-over gateway and will not reach CRUD server even if it is up
 - [ ] Setup RR scheme & auto scaling policy for CRUD servers
