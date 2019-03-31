@@ -221,8 +221,8 @@ func main() {
 	r.HandleFunc("/health", healthStatus).Methods("GET")
 
 	srv := &http.Server{
-		Handler: 		r,
-		Addr:			":8000",
+		Handler: 	r,
+		Addr:		":8000",
 		WriteTimeout: 	15 * time.Second,
 		ReadTimeout:	15 * time.Second,
 	}
