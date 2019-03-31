@@ -14,6 +14,7 @@ import (
 	"log"
 	"net/http"
 	"reflect"
+	"time"
 )
 
 // create appropriate game result entry and upload to db
@@ -320,5 +321,13 @@ func main()  {
 	r.HandleFunc("/create/{game}", createEntry).Methods("POST")
 	r.HandleFunc("/read/{game}/{user}", readEntry).Methods("GET")
 	r.HandleFunc("/health", healthStatus).Methods("GET")
-	log.Fatal(http.ListenAndServe(":8000", r))
+
+	srv := &http.Server{
+		Handler: 		r,
+		Addr:			":8000",
+		WriteTimeout: 	15 * time.Second,
+		ReadTimeout:	15 * time.Second,
+	}
+
+	log.Fatal(srv.ListenAndServe())
 }

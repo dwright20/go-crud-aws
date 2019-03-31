@@ -341,5 +341,12 @@ func main() {
 	// catch-all
 	r.NotFoundHandler = http.HandlerFunc(NotFound)
 
-	log.Fatal(http.ListenAndServe(":80", r))
+	srv := &http.Server{
+		Handler: 		r,
+		Addr:			":80",
+		WriteTimeout: 	15 * time.Second,
+		ReadTimeout:	15 * time.Second,
+	}
+
+	log.Fatal(srv.ListenAndServe())
 }
