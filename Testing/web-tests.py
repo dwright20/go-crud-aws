@@ -4,7 +4,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 DRIVER = ''
-WEB_SERVER = ''
+# WEB_SERVER = ''  # EC2 web server
+WEB_SERVER = ''  # Gateway 
 USER = ''  # testing username
 PASS = ''  # testing password
 
@@ -58,7 +59,7 @@ class WebTesting (unittest.TestCase):
     def test_apex_submit(self):
         self.signIn()  # sign into web server
         driver = self.driver
-        driver.find_element_by_css_selector('a[href="apexSelect"]').click()  # select Apex game option
+        driver.find_element_by_xpath(u'//a[contains(@href, "apexSelect")]').click()  # select Apex game option
         driver.find_element_by_partial_link_text('Submit').click()  # select submission page
         # below finds fields of submission form and sends mock data
         driver.find_element_by_name("result").send_keys('loss')
@@ -77,7 +78,7 @@ class WebTesting (unittest.TestCase):
     def test_fort_submit(self):
         self.signIn()  # sign into web server
         driver = self.driver
-        driver.find_element_by_css_selector('a[href="fortniteSelect"]').click()  # select Apex game option
+        driver.find_element_by_xpath(u'//a[contains(@href, "fortniteSelect")]').click()  # select Fortnite game option
         driver.find_element_by_partial_link_text('Submit').click()  # select submission page
         # below finds fields of submission form and sends mock data
         driver.find_element_by_name("result").send_keys('loss')
@@ -94,7 +95,7 @@ class WebTesting (unittest.TestCase):
     def test_hots_submit(self):
         self.signIn()  # sign into web server
         driver = self.driver
-        driver.find_element_by_css_selector('a[href="hotsSelect"]').click()  # select Apex game option
+        driver.find_element_by_xpath(u'//a[contains(@href, "hotsSelect")]').click()  # select Hots game option
         driver.find_element_by_partial_link_text('Submit').click()  # select submission page
         # below finds fields of submission form and sends mock data
         driver.find_element_by_name("result").send_keys('loss')
@@ -113,7 +114,7 @@ class WebTesting (unittest.TestCase):
     def test_apex_view(self):
         self.signIn()  # sign into web server
         driver = self.driver
-        driver.find_element_by_css_selector('a[href="apexSelect"]').click()
+        driver.find_element_by_xpath(u'//a[contains(@href, "apexSelect")]').click()
         driver.find_element_by_partial_link_text('View').click()  # select view page
         table = driver.find_element_by_css_selector('tbody').get_attribute('innerHTML')  # read table body html
         worked = True if USER and 'apex' in table else False
@@ -123,18 +124,17 @@ class WebTesting (unittest.TestCase):
     def test_fort_view(self):
         self.signIn()  # sign into web server
         driver = self.driver
-        driver.find_element_by_css_selector('a[href="fortniteSelect"]').click()
+        driver.find_element_by_xpath(u'//a[contains(@href, "fortniteSelect")]').click()
         driver.find_element_by_partial_link_text('View').click()  # select view page
         table = driver.find_element_by_css_selector('tbody').get_attribute('innerHTML')  # read table body html
         worked = True if USER and 'fort' in table else False
         self.assertTrue(worked)  # determine if table is presenting data for account
 
-
     # test viewing hots data
     def test_hots_view(self):
         self.signIn()  # sign into web server
         driver = self.driver
-        driver.find_element_by_css_selector('a[href="hotsSelect"]').click()
+        driver.find_element_by_xpath(u'//a[contains(@href, "hotsSelect")]').click()
         driver.find_element_by_partial_link_text('View').click()  # select view page
         table = driver.find_element_by_css_selector('tbody').get_attribute('innerHTML')  # read table body html
         worked = True if USER and 'hots' in table else False
@@ -143,6 +143,7 @@ class WebTesting (unittest.TestCase):
     # close chrome session after each test
     def tearDown(self):
         self.driver.close()
+
 
 if __name__== '__main__':
     unittest.main()
