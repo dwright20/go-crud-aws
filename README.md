@@ -9,10 +9,10 @@ Go, CRUD, AWS is a project I am working on to get a better understanding of Go(G
 System is hosted on AWS with 2 API gateways, various Lambda functions, RDS, & DynamoDB  tables.
 ### Web Gateway
 - AWS API Gateway
-- Proxies all web requests to web specific Lambda functions
+- Proxies all requests to web specific Lambda functions
 ### Web Functions
 - Handles all User/Client interaction
-- Interacts with Client & App gateway
+- Interacts with App gateway
 - Runs on Go
 - Stores all HTML files (CSS & images served from an S3 bucket)
 - Manages cookie
@@ -61,3 +61,4 @@ Some resources that I found very helpful:
 * [HTML Parsing](https://stackoverflow.com/questions/30109061/golang-parse-html-extract-all-content-with-body-body-tags)
 * [Generate HTML content](https://stackoverflow.com/questions/19991124/go-template-html-iteration-to-generate-table-from-struct)
 * [AWS Lambda Go Api Proxy](https://github.com/awslabs/aws-lambda-go-api-proxy)
+* [go.rice](https://github.com/GeertJohan/go.rice) - embedding HTML files
