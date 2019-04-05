@@ -19,12 +19,17 @@ System is hosted on AWS with 2 API gateways, various Lambda functions, RDS, & Dy
 ### App Gateway
 - AWS API Gateway
 - Proxies all requests to appropriate App/CRUD Lambda function
-### App/CRUD Functions
+### App Functions
 - Runs on Go
-- Interacts with Credentials & Results DB
-- Only handles POST & GET requests
+- Interacts with Credentials DB
+- Only handles account specific requests
+### CRUD Functions
+- Runs on Go
+- Interacts with Results DB
+- Only handles results specific requests
+- Independent function for each part of C.R.U.D.
 ### Credentials DB
-- Database for sign-in credentials
+- Database for account credentials
 - Runs on PostgreSQL
 ### Results DB
 - Database for game results

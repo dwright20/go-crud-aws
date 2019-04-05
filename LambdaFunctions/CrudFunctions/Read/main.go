@@ -24,7 +24,8 @@ var muxLambda *gorillamux.GorillaMuxAdapter  // initialize mux lambda adapter
 func init() {
 	log.Printf("Create game Mux start...")
 	r := mux.NewRouter()
-	r.HandleFunc("/read/{game}/{user}", readEntry).Methods("GET")
+	r.HandleFunc("/view/{game}/{user}", readEntry).Methods("GET")  // if request is from web tier
+	r.HandleFunc("/read/{game}/{user}", readEntry).Methods("GET")  // if request is from app tier
 	muxLambda = gorillamux.New(r)
 }
 
