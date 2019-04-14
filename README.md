@@ -3,27 +3,30 @@ Go, CRUD, AWS is a project I am working on to get a better understanding of Go(G
 ## Design
 ### [Design 1](https://github.com/dwright20/go-crud-aws/blob/master/Images/ArchitectureDiagram.jpg)
 ### [Design 2](https://github.com/dwright20/go-crud-aws/blob/master/Images/ArchitectureDiagram2.jpeg)
+### [Design 3](https://github.com/dwright20/go-crud-aws/blob/master/Images/ArchitectureDiagram3.jpg)
 ### Current Design:
-![Architecture Diagram](https://github.com/dwright20/go-crud-aws/blob/master/Images/ArchitectureDiagram3.jpg)
+![Architecture Diagram](https://github.com/dwright20/go-crud-aws/blob/master/Images/ArchitectureDiagram4.jpg)
 
-System is hosted on AWS with 2 API gateways, various Lambda functions, RDS, & DynamoDB  tables.
+
+System is hosted on AWS with route 53, 3 ALBs, 3 ECS clusters, 2 API gateways, various Lambda functions, RDS, & DynamoDB  tables.
 ### Web Gateway
 - AWS API Gateway
 - Proxies all requests to web specific Lambda functions
-### Web Functions
+### Web Fargate/Functions
 - Handles all User/Client interaction
 - Interacts with App gateway
 - Runs on Go
 - Stores all HTML files (CSS & images served from an S3 bucket)
 - Manages cookie
+- Web fargate can failover to App gateway if App or CRUD fargate is not healthy 
 ### App Gateway
 - AWS API Gateway
 - Proxies all requests to appropriate App/CRUD Lambda function
-### App Functions
+### App Fargate/Functions
 - Runs on Go
 - Interacts with Credentials DB
 - Only handles account specific requests
-### CRUD Functions
+### CRUD Fargate/Functions
 - Runs on Go
 - Interacts with Results DB
 - Only handles results specific requests
@@ -51,12 +54,16 @@ System is hosted on AWS with 2 API gateways, various Lambda functions, RDS, & Dy
 * Streamlined process for viewing game results by leveraging a cookie
 * Now skips a webpage that requests user's username to retrieve results
 * Ensures user can only see their own results
-- [x] Setup fail-over *Used with [Design 2](https://github.com/dwright20/go-crud-aws/blob/master/Images/ArchitectureDiagram2.jpeg)
+- [x] Setup fail-over *Used with [Current](https://github.com/dwright20/go-crud-aws/blob/master/Images/ArchitectureDiagram4.jpg) and [Design 2](https://github.com/dwright20/go-crud-aws/blob/master/Images/ArchitectureDiagram2.jpeg)
 * To be done at the server level by the go applications
 * Server will check if primary path server is up; if it is not, it will send request to the fail-over API Gateway backed by Lambda
 * If CRUD Server is down, requests will still go to App Server prior to fail-over gateway
 * If App Server is down, all requests will go to fail-over gateway and will not reach CRUD server even if it is up
-- [ ] Setup RR scheme & auto scaling policy for Web server/gateway
+- [x] Setup RR scheme & auto scaling policy for Web server/gateway
+* Used a weighted routing policy to deliver content between an API gateway and an ALB infront of the web ECS cluster
+* Health check is setup to ensure web server is healthy before requests are sent there
+* Weight for web server is 4 and API is 1
+* Have autoscaling disabled for servers behind ALBs, but have it configured so it can be used if necessary
 - [ ] Error handling & edge cases
 - [ ] Incorporate more games
 ## Acknowledgements
@@ -67,3 +74,4 @@ Some resources that I found very helpful:
 * [Generate HTML content](https://stackoverflow.com/questions/19991124/go-template-html-iteration-to-generate-table-from-struct)
 * [AWS Lambda Go Api Proxy](https://github.com/awslabs/aws-lambda-go-api-proxy)
 * [go.rice](https://github.com/GeertJohan/go.rice) - embedding HTML files
+* [golang - Docker Hub](https://hub.docker.com/_/golang) - to containerize server contents
