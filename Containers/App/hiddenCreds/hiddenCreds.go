@@ -11,11 +11,11 @@ type Creds struct {
 func GetCreds () Creds{
 	creds := Creds{}
 
-	creds.Host     = "dbinstance1.com7aocj6hq1.us-east-1.rds.amazonaws.com"
-	creds.Port     = 5432
-	creds.User     = "dbinstance1admin"
-	creds.Password = "_dbinstance1Admin_"
-	creds.Dbname   = "postgres"
+	creds.Host     = ""
+	creds.Port     = 
+	creds.User     = ""
+	creds.Password = ""
+	creds.Dbname   = ""
 
 	return creds
 }
